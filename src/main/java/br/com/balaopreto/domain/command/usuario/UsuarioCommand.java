@@ -22,7 +22,7 @@ public class UsuarioCommand implements IUsuarioCommand {
     public void registrarUsuario(UsuarioRequestDto usuarioRequestDto) {
         LOGGER.info("Início do método para registrar o usuário - Service.");
 
-            Usuario usuario = new Usuario();
+            var usuario = new Usuario();
             usuario.setNome(usuarioRequestDto.getNome());
             usuario.setEmail(usuarioRequestDto.getEmail());
             usuario.setSenha(usuarioRequestDto.getSenha());

@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: Balao Preto
+
+  springdoc:
+    api-docs:
+      path: /v1/api-docs
+    swagger-ui:
+      path: /swagger-ui.html
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/balaoPretoDb
+    username: postgres
+    password: admin
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 2
+      idle-timeout: 20000
+      pool-name: BalaoPreto
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: verificacaobalaopreto@gmail.com
+    password: ecvc jjdj bolj fikt
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
