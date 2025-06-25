@@ -13,11 +13,8 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UsuarioRequestDto {
 
-    private long id;
     private String nome;
+    private String telefone;
     private String email;
-    private String senha;
-    private String dataCadastro;
-    private double telefone;
 
 }

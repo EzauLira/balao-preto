@@ -1,7 +1,8 @@
 package br.com.balaopreto.adapter.input.verificarCodigo;
 
-import br.com.balaopreto.adapter.input.dto.verificarCodigo.VerificacaoCodigoDTO;
+import br.com.balaopreto.adapter.input.dto.usuario.UsuarioRequestDto;
 import br.com.balaopreto.config.dto.StandardResponseDto;
+import br.com.balaopreto.utils.constantes.MensagensUtils;
 import br.com.balaopreto.port.input.IVerificarCodigoCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,13 +22,14 @@ public class VerificarCodigoController implements IVerificarCodigoController{
         this.iVerificarCodigoCommand = iVerificarCodigoCommand;
     }
 
-    @PostMapping("/enviar-codigo")
-    public ResponseEntity<StandardResponseDto> verificarTelefone(@RequestBody VerificacaoCodigoDTO verificacaoCodigoDTO) {
-        LOGGER.info("Início do método para verificar o email - controller");
+    @Override
+    @PostMapping("/enviar-dados")
+    public ResponseEntity<StandardResponseDto> confirmarUsuarioPorEmail(@RequestBody UsuarioRequestDto usuarioRequestDto){
+        LOGGER.info("Início do método para validar um novo usuário - controller");
 
-        iVerificarCodigoCommand.salvarCodigoVerificacao(verificacaoCodigoDTO.getEmail());
+        iVerificarCodigoCommand.confirmarUsuarioPorEmail(usuarioRequestDto);
 
-        return ResponseEntity.ok(StandardResponseDto.builder().message("Código enviado para o email informado.").build());
+        return ResponseEntity.ok(StandardResponseDto.builder().message(MensagensUtils.CODIGO_ENVIADO).build());
     }
 
     @GetMapping("/verificar-codigo")
@@ -36,6 +38,6 @@ public class VerificarCodigoController implements IVerificarCodigoController{
 
         iVerificarCodigoCommand.autenticarUsuario(codigo);
 
-        return ResponseEntity.ok(StandardResponseDto.builder().message("Verificação Concluida!").build());
+        return ResponseEntity.ok(StandardResponseDto.builder().message(MensagensUtils.VERIFICACAO_CONCLUIDA).build());
     }
 }

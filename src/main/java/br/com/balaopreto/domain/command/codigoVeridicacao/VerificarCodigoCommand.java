@@ -1,7 +1,10 @@
 package br.com.balaopreto.domain.command.codigoVeridicacao;
 
+import br.com.balaopreto.adapter.input.dto.usuario.UsuarioRequestDto;
+import br.com.balaopreto.utils.constantes.MensagensUtils;
 import br.com.balaopreto.domain.exception.CustomException;
 import br.com.balaopreto.port.input.IEmailCommand;
+import br.com.balaopreto.port.input.IUsuarioCommand;
 import br.com.balaopreto.port.input.IVerificarCodigoCommand;
 import br.com.balaopreto.port.output.IVerificarCodigoRepository;
 import br.com.balaopreto.utils.CodigoUtils;
@@ -17,25 +20,24 @@ public class VerificarCodigoCommand implements IVerificarCodigoCommand {
     private static final Logger LOGGER = LoggerFactory.getLogger(VerificarCodigoCommand.class);
 
     private final IVerificarCodigoRepository iVerificarCodigoRepository;
-
+    private IUsuarioCommand iUsuarioCommand;
     private final IEmailCommand iEmailCommand;
 
-    public VerificarCodigoCommand(IVerificarCodigoRepository iVerificarCodigoRepository, IEmailCommand iEmailCommand) {
+    public VerificarCodigoCommand(IVerificarCodigoRepository iVerificarCodigoRepository,IUsuarioCommand iUsuarioCommand, IEmailCommand iEmailCommand) {
         this.iVerificarCodigoRepository = iVerificarCodigoRepository;
+        this.iUsuarioCommand = iUsuarioCommand;
         this.iEmailCommand = iEmailCommand;
     }
 
-    @Override
-    public void salvarCodigoVerificacao(String email) {
-
-        LOGGER.info("Início do método para salvar código no banco de dados - Service.");
+    public void confirmarUsuarioPorEmail(UsuarioRequestDto request) {
+        LOGGER.info("Início do método para validar o usuário - Service.");
 
         var codigo = CodigoUtils.gerarCodigo4Digitos();
 
         LOGGER.info("Entrando no método Repositório - Service ");
-        iVerificarCodigoRepository.salvarCodigoVerificacao(email, codigo);
+        iVerificarCodigoRepository.salvarCodigoVerificacao(request.getNome(), request.getTelefone(), request.getEmail(), codigo);
 
-        iEmailCommand.enviarEmail(email, codigo);
+        iEmailCommand.enviarEmail(request.getEmail(), codigo);
     }
 
     @Override
@@ -45,11 +47,17 @@ public class VerificarCodigoCommand implements IVerificarCodigoCommand {
 
         List<Integer> codigoBanco = iVerificarCodigoRepository.autenticarUsuario();
 
-        for (int lista : codigoBanco) {
-            if (codigo == lista)
-                return;
+        List<UsuarioRequestDto> pegarDados = iVerificarCodigoRepository.salvarDadosDoUsuario();
 
+        for (int lista : codigoBanco) {
+            if (codigo == lista) {
+                for (UsuarioRequestDto dadosUsuario : pegarDados){
+
+                    iUsuarioCommand.registrarUsuario(dadosUsuario);
+                }
+                return;
+            }
         }
-        throw new CustomException("Código não existe ou esta inválido.");
+        throw new CustomException(MensagensUtils.CODIGO_INVALIDO_OU_INCORRETO);
     }
 }

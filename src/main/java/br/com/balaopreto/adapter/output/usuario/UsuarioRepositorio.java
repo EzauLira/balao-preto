@@ -27,12 +27,12 @@ public class UsuarioRepositorio implements IUsuarioRepositorio {
 
         LOGGER.info("Início do Try-Catch e preparamento do objeto para subir no Banco de dados");
         try {
-            var sql = "SELECT * FROM registrar_usuario(?, ?, ?, ?)";
+            var sql = "INSERT INTO public.usuarios (nome, telefone, email) VALUES (?, ?, ?)";
             jdbcTemplate.execute(sql, (PreparedStatementCallback<Void>) preparedStatment -> {
                 preparedStatment.setString(1, usuario.getNome());
-                preparedStatment.setString(2, usuario.getEmail());
-                preparedStatment.setString(3, usuario.getSenha());
-                preparedStatment.setDouble(4, usuario.getTelefone());
+                preparedStatment.setString(2, usuario.getTelefone());
+                preparedStatment.setString(3, usuario.getEmail());
+
                 preparedStatment.execute();
                 return null;
             });
