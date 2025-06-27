@@ -4,8 +4,9 @@ import br.com.balaopreto.adapter.input.dto.usuario.UsuarioRequestDto;
 
 import java.util.List;
 
-public interface IVerificarCodigoRepository {
-    void salvarCodigoVerificacao(UsuarioRequestDto request, int codigo);
+public interface ILoginRepositorio {
+
+    void salvarCodigoAutenticacao(UsuarioRequestDto request, int codigo);
+
     List<Integer> autenticarUsuario();
-    List<UsuarioRequestDto> extrairDadosUsuario();
 }

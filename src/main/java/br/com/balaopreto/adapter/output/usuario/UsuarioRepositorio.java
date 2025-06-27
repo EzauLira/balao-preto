@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class UsuarioRepositorio implements IUsuarioRepositorio {
 
@@ -21,8 +23,12 @@ public class UsuarioRepositorio implements IUsuarioRepositorio {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Registra o usuário no banco de dados após verificar se os dadaos estão todos corretos anteriormente.
+     * @param usuario
+     */
     public void registrarUsuario(Usuario usuario) {
-        LOGGER.info("Início do método para registrar um usuário no banco de dados - Patrimony");
+        LOGGER.info("Início do método para registrar um usuário no banco de dados - repositório");
 
 
         LOGGER.info("Início do Try-Catch e preparamento do objeto para subir no Banco de dados");
@@ -42,6 +48,23 @@ public class UsuarioRepositorio implements IUsuarioRepositorio {
         } catch (Exception e) {
             LOGGER.error("Exception: {}", e.getMessage(), e);
             throw new CustomException("Erro ao cadastrar usuário no banco de dados.");
+        }
+    }
+
+    @Override
+    public List<String> consultaUsuarior() {
+        LOGGER.info("Início do método para consultar o e-mail no banco de dados - repositório");
+
+        try {
+            var sql = "SELECT email From usuarios";
+            return jdbcTemplate.queryForList(sql, String.class);
+
+        } catch (DataAccessException e) {
+            LOGGER.error("DataAccessException: {}", e.getMessage(), e);
+            throw new BaseException(e.getMostSpecificCause().getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Exception: {}", e.getMessage(), e);
+            throw new CustomException("Erro ao buscar e-mail no banco de dados.");
         }
     }
 }

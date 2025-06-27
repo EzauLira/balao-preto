@@ -20,6 +20,10 @@ public class UsuarioCommand implements IUsuarioCommand {
         this.iUsuarioRepositorio = iUsuarioRepositorio;
     }
 
+    /**
+     * Esse método valida os dados vindos do usuário, monta o usuário com os dados vindos da requisição e envia para o repositório.
+     * @param usuarioRequestDto
+     */
     @Override
     public void registrarUsuario(UsuarioRequestDto usuarioRequestDto) {
         LOGGER.info("Início do método para registrar o usuário - Service.");

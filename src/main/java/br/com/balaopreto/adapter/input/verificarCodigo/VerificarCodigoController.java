@@ -22,6 +22,12 @@ public class VerificarCodigoController implements IVerificarCodigoController{
         this.iVerificarCodigoCommand = iVerificarCodigoCommand;
     }
 
+    /**
+     * Recebe através da requisição os dados do usuário e envia para service para gerar um código, em seguida enviar um e-mail.
+     * Retorna 200 mensagem de sucesso.
+     * @param usuarioRequestDto
+     * @return
+     */
     @Override
     @PostMapping("/enviar-dados")
     public ResponseEntity<StandardResponseDto> confirmarUsuarioPorEmail(@RequestBody UsuarioRequestDto usuarioRequestDto){
@@ -32,6 +38,13 @@ public class VerificarCodigoController implements IVerificarCodigoController{
         return ResponseEntity.ok(StandardResponseDto.builder().message(MensagensUtils.CODIGO_ENVIADO).build());
     }
 
+    /**
+     * Recebe através da requisição o código digitado pelo usuário e manda para service verificar se baco com o do banco.
+     * Retorna 200 de código confirmado.
+     * @param codigo
+     * @return
+     */
+    @Override
     @GetMapping("/verificar-codigo")
     public ResponseEntity<StandardResponseDto> autenticarUsuario(@RequestParam int codigo){
         LOGGER.info("Início do método para verificar o código - controller");

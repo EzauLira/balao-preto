@@ -1,9 +1,10 @@
-package br.com.balaopreto.adapter.output.verificarCodigo;
+package br.com.balaopreto.adapter.output.login;
 
 import br.com.balaopreto.adapter.input.dto.usuario.UsuarioRequestDto;
+import br.com.balaopreto.domain.enuns.TipoEnum;
 import br.com.balaopreto.domain.exception.BaseException;
 import br.com.balaopreto.domain.exception.CustomException;
-import br.com.balaopreto.port.output.IVerificarCodigoRepository;
+import br.com.balaopreto.port.output.ILoginRepositorio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,35 +15,39 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class VerificarCodigoRepository implements IVerificarCodigoRepository {
+public class LoginRepositorio implements ILoginRepositorio {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(VerificarCodigoRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoginRepositorio.class);
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public void salvarCodigoVerificacao(String nome, String telefone, String email, int codigo) {
-        LOGGER.info("Início do método para salvar o código no banco de dados - Patrimony");
+    public void salvarCodigoAutenticacao(UsuarioRequestDto request, int codigo) {
+        LOGGER.info("Início do método para salvar o código no banco de dados - Repositorio");
 
         try {
-            var sql = "INSERT INTO verificacoes (nome, telefone, email, codigo) VALUES (?, ?, ?, ?)";
-            jdbcTemplate.update(sql, nome, telefone, email, codigo);
+            var sql = "INSERT INTO verificacoes (tipo, email, codigo) VALUES (?, ?, ?)";
+            jdbcTemplate.update(sql, TipoEnum.LOGIN.getTipo(), request.getEmail(), codigo);
 
         } catch (DataAccessException e) {
             LOGGER.error("DataAccessException: {}", e.getMessage(), e);
             throw new BaseException(e.getMostSpecificCause().getMessage());
         } catch (Exception e) {
             LOGGER.error("Exception: {}", e.getMessage(), e);
-            throw new CustomException("Erro ao cadastrar usuário no banco de dados.");
+            throw new CustomException("Erro ao salvar os dados do usuário no banco de dados.");
         }
     }
 
+    /**
+     * Confirma o código inserido na requisição pelo usuário.
+     * @return
+     */
     @Override
     public List<Integer> autenticarUsuario() {
-        LOGGER.info("Início do método para salvar o código no banco de dados - Patrimony");
+        LOGGER.info("Início do método para verificar código do usuário - Repositorio");
 
         try {
-            var sql = "SELECT codigo From verificacoes";
+            var sql = "SELECT codigo FROM verificacoes WHERE tipo = 'Login'";
             return jdbcTemplate.queryForList(sql, Integer.class);
 
         } catch (DataAccessException e) {
@@ -54,12 +59,16 @@ public class VerificarCodigoRepository implements IVerificarCodigoRepository {
         }
     }
 
+    /**
+     * Extrai os dados do usuáio da tabela de verificação e retorna para o chamador.
+     * @return
+     */
     @Override
-    public List<UsuarioRequestDto> salvarDadosDoUsuario() {
-        LOGGER.info("Início do método para salvar o código no banco de dados - Patrimony");
+    public List<UsuarioRequestDto> extrairEmail() {
+        LOGGER.info("Início do método para extrair os dados do usuário no banco de dados - Repositorio");
 
         try {
-            var sql = "SELECT nome, telefone, email FROM verificacoes";
+            var sql = "SELECT email FROM usuarios";
 
             return jdbcTemplate.query(sql, (rs, rowNum) -> new UsuarioRequestDto(
                     rs.getString("nome"),
@@ -75,10 +84,4 @@ public class VerificarCodigoRepository implements IVerificarCodigoRepository {
             throw new CustomException("Erro ao buscar código no banco de dados.");
         }
     }
-
-//    @Scheduled(fixedRate = 60000)
-//    public void limparVerificacoesExpiradas() {
-//        var sql = "DELETE FROM verificacoes WHERE criado_em < NOW() - INTERVAL '5 minutes'";
-//        jdbcTemplate.update(sql);
-//    }
 }

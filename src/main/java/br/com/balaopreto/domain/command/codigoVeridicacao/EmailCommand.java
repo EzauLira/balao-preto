@@ -32,14 +32,14 @@ public class EmailCommand implements IEmailCommand {
      */
     @Override
     @Async
-    public void enviarEmail(String email, int codigo) {
+    public void enviarEmailVerificacao(String email, int codigo) {
         LOGGER.info("Início do método para envio do o email - controller");
         MimeMessage mimeMessage = emailSender.createMimeMessage();
 
         try {
             var helper = new MimeMessageHelper(mimeMessage, true);
             helper.setTo(email);
-            helper.setText(gerarCorpoEmail(String.valueOf(codigo)), true);
+            helper.setText(gerarCorpoEmailVerificacao(String.valueOf(codigo)), true);
 
             emailSender.send(mimeMessage);
         } catch (MessagingException e) {
@@ -53,9 +53,44 @@ public class EmailCommand implements IEmailCommand {
      * @param codigo  O codigo de verificação.
      * @return O corpo do e-mail em formato HTML.
      */
-    private String gerarCorpoEmail(String codigo) {
+    private String gerarCorpoEmailVerificacao(String codigo) {
         LOGGER.info("Início do método para gerar o corpo d o email - controller");
         var modelo = EmailEnum.CADIGO_VERIFICACAO.getModelo();
+        return modelo
+                .replace("{codigo}", codigo);
+    }
+
+    /**
+     * Envia um e-mail de confirmação de inscrição.
+     *
+     * @param email O endereço de e-mail do destinatário.
+     */
+    @Override
+    @Async
+    public void enviarEmailAutenticacao(String email, int codigo) {
+        LOGGER.info("Início do método para envio do o email - controller");
+        MimeMessage mimeMessage = emailSender.createMimeMessage();
+
+        try {
+            var helper = new MimeMessageHelper(mimeMessage, true);
+            helper.setTo(email);
+            helper.setText(gerarCorpoEmailAutenticacao(String.valueOf(codigo)), true);
+
+            emailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            throw new CustomException("Erro ao enviar e-mail");
+        }
+    }
+
+    /**
+     * Gera o corpo do e-mail de confirmação.
+     *
+     * @param codigo  O codigo de verificação.
+     * @return O corpo do e-mail em formato HTML.
+     */
+    private String gerarCorpoEmailAutenticacao(String codigo) {
+        LOGGER.info("Início do método para gerar o corpo d o email - controller");
+        var modelo = EmailEnum.CADIGO_AUTENTICACAO.getModelo();
         return modelo
                 .replace("{codigo}", codigo);
     }
