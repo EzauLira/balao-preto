@@ -38,7 +38,6 @@ public class LoginController implements ILoginController {
         return ResponseEntity.ok(StandardResponseDto.builder().message("Código enviado com sucesso.").build());
     }
 
-
     /**
      * Recebe através da requisição o código digitado pelo usuário e manda para service verificar se baco com o do banco.
      * Retorna 200 de código confirmado.

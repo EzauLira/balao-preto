@@ -1,6 +1,5 @@
 package br.com.balaopreto.adapter.input.dto.usuario;
 
-import br.com.balaopreto.domain.enuns.TipoEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -23,7 +23,7 @@ public class LoginCommand implements ILoginCommand {
     private IEmailCommand iEmailCommand;
     private IUsuarioRepositorio iUsuarioRepositorio;
 
-    public LoginCommand(ILoginRepositorio iLoginRepositorio, IEmailCommand iEmailCommand, IUsuarioRepositorio iUsuarioRepositorio){
+    public LoginCommand(ILoginRepositorio iLoginRepositorio, IEmailCommand iEmailCommand, IUsuarioRepositorio iUsuarioRepositorio) {
         this.iUsuarioRepositorio = iUsuarioRepositorio;
         this.iLoginRepositorio = iLoginRepositorio;
         this.iEmailCommand = iEmailCommand;
@@ -37,6 +37,7 @@ public class LoginCommand implements ILoginCommand {
      * Em seguida envia para o e-mail do usuário o mesmo código através do método @enviarEmail.
      * @param request contém os dados da requisição do usuário.
      */
+    @Override
     public void logar(UsuarioRequestDto request){
         LOGGER.info("Início do método para efetuar login do usuário - Service.");
 
@@ -48,7 +49,6 @@ public class LoginCommand implements ILoginCommand {
         iEmailCommand.enviarEmailAutenticacao(request.getEmail(), codigo);
     }
 
-
     /**
      * Esse método tem como princípio validar o usuário/confirmar conta.
      * Ele pega o código que o usuário recebeu no e-mail em seguida verifica se no banco tem o mesmo código @autentiarUsuario.
@@ -58,19 +58,20 @@ public class LoginCommand implements ILoginCommand {
      */
     @Override
     public void autenticarUsuario(int codigo) {
-
         LOGGER.info("Início do método para verificar se o código existe - Service.");
 
         List<Integer> codigoBanco = iLoginRepositorio.autenticarUsuario();
-
-
+        List<UsuarioRequestDto> emailUsuario = iLoginRepositorio.extrairEmail();
 
         for (int lista : codigoBanco) {
             if (codigo == lista) {
+                for (UsuarioRequestDto email : emailUsuario) {
+                    if (email.equals(emailUsuario))
+                        throw new CustomException("Usuário já pussoui cadastro.");
+                }
                 return;
             }
         }
         throw new CustomException(MensagensUtils.CODIGO_INVALIDO_OU_INCORRETO);
     }
-
 }

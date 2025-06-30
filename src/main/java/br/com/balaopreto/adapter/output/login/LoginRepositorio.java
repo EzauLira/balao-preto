@@ -60,16 +60,17 @@ public class LoginRepositorio implements ILoginRepositorio {
     }
 
     /**
-     * Extrai os dados do usuáio da tabela de verificação e retorna para o chamador.
+     * Extrai o e-mail do usuário da tabela de usuarios
+     * e retorna para o chamador.
      * @return
      */
     @Override
     public List<UsuarioRequestDto> extrairEmail() {
-        LOGGER.info("Início do método para extrair os dados do usuário no banco de dados - Repositorio");
+        LOGGER.info("Início do método para extrair o e-mail do usuário no banco de dados - Repositorio");
 
         try {
-            var sql = "SELECT email FROM usuarios";
 
+            var sql = "SELECT email FROM usuarios";
             return jdbcTemplate.query(sql, (rs, rowNum) -> new UsuarioRequestDto(
                     rs.getString("nome"),
                     rs.getString("telefone"),

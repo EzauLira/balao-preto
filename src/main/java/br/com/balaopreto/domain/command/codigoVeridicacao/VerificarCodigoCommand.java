@@ -76,8 +76,7 @@ public class VerificarCodigoCommand implements IVerificarCodigoCommand {
 
         for (int lista : codigoBanco) {
             if (codigo == lista) {
-                for (UsuarioRequestDto dadosUsuario : dadosColetados){
-
+                for (UsuarioRequestDto dadosUsuario : dadosColetados) {
                     iUsuarioCommand.registrarUsuario(dadosUsuario);
                 }
                 return;

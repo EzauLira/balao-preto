@@ -9,4 +9,6 @@ public interface ILoginRepositorio {
     void salvarCodigoAutenticacao(UsuarioRequestDto request, int codigo);
 
     List<Integer> autenticarUsuario();
+
+    List<UsuarioRequestDto> extrairEmail();
 }
