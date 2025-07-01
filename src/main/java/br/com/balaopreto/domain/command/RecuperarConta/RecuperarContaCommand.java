@@ -1,14 +1,10 @@
 package br.com.balaopreto.domain.command.RecuperarConta;
 
-
 import br.com.balaopreto.domain.exception.BaseException;
 import br.com.balaopreto.domain.exception.CustomException;
 import br.com.balaopreto.port.input.IEmailCommand;
 import br.com.balaopreto.port.input.IRecuperarContaCommand;
-import br.com.balaopreto.port.input.IUsuarioCommand;
 import br.com.balaopreto.port.output.IRecuperarContaRepositorio;
-import br.com.balaopreto.port.output.IUsuarioRepositorio;
-import br.com.balaopreto.port.output.IVerificarCodigoRepository;
 import br.com.balaopreto.utils.CodigoUtils;
 import br.com.balaopreto.utils.constantes.MensagensUtils;
 import org.slf4j.Logger;
