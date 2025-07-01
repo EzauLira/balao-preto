@@ -35,7 +35,7 @@ public class LoginController implements ILoginController {
 
         iLoginCommand.logar(usuarioRequestDto);
 
-        return ResponseEntity.ok(StandardResponseDto.builder().message("Código enviado com sucesso.").build());
+        return ResponseEntity.ok(StandardResponseDto.builder().message(MensagensUtils.SUCESSO_CODIGO_ENVIADO).build());
     }
 
     /**

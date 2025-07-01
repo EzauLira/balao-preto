@@ -8,6 +8,8 @@ public class MensagensUtils {
     public static final String USUARIO_LOGADO = "login efetuado com sucesso!";
     public static final String CODIGO_ENVIADO_RECUPERACAO = "Código enviado para: ";
     public static final String ERRO_TELEFONE = "Telefone não cadastrado.";
+    public static final String SUCESSO_CODIGO_ENVIADO = "Código enviado com sucesso.";
+    public static final String USUARIO_JA_CADASTRADO = "Usuário já está cadastrado.";
 
     private MensagensUtils(){
 

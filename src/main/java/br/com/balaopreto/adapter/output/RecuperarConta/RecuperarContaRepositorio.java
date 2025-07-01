@@ -1,6 +1,5 @@
 package br.com.balaopreto.adapter.output.RecuperarConta;
 
-import br.com.balaopreto.adapter.input.dto.usuario.UsuarioRequestDto;
 import br.com.balaopreto.domain.enuns.TipoEnum;
 import br.com.balaopreto.domain.exception.BaseException;
 import br.com.balaopreto.domain.exception.CustomException;
@@ -21,6 +20,11 @@ public class RecuperarContaRepositorio implements IRecuperarContaRepositorio {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    /**
+     * Salva o código no banco de dados para ser validado em seguida.
+     * @param email email do usuário.
+     * @param codigo código de verificação.
+     */
     @Override
     public void salvarCodigoAutenticacao(String email, int codigo) {
         LOGGER.info("Início do método para salvar o código no banco de dados - Repositorio");
@@ -34,7 +38,7 @@ public class RecuperarContaRepositorio implements IRecuperarContaRepositorio {
             throw new BaseException(e.getMostSpecificCause().getMessage());
         } catch (Exception e) {
             LOGGER.error("Exception: {}", e.getMessage(), e);
-            throw new CustomException("Erro ao salvar os dados do usuário no banco de dados.");
+            throw new CustomException("Erro ao salvar op código e email no banco de dados..");
         }
     }
 
@@ -77,7 +81,7 @@ public class RecuperarContaRepositorio implements IRecuperarContaRepositorio {
             throw new BaseException(e.getMostSpecificCause().getMessage());
         } catch (Exception e) {
             LOGGER.error("Exception: {}", e.getMessage(), e);
-            throw new CustomException("Erro ao buscar código no banco de dados.");
+            throw new CustomException("Erro ao tentar autenticar a conta.");
         }
     }
 }

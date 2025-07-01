@@ -24,7 +24,7 @@ public class UsuarioRepositorio implements IUsuarioRepositorio {
     }
 
     /**
-     * Registra o usuário no banco de dados após verificar se os dadaos estão todos corretos anteriormente.
+     * Registra o usuário no banco de dados após verificar se os dados estão todos corretos anteriormente.
      * @param usuario
      */
     public void registrarUsuario(Usuario usuario) {

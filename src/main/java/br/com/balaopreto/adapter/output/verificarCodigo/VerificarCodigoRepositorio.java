@@ -23,8 +23,8 @@ public class VerificarCodigoRepositorio implements IVerificarCodigoRepository {
 
     /**
      * Insere os dados já validados anteriormente na tabela do banco de dados.
-     * @param request
-     * @param codigo
+     * @param request requisição do usuário.
+     * @param codigo código enviado para o banco.
      */
     @Override
     public void salvarCodigoVerificacao(UsuarioRequestDto request, int codigo) {
@@ -39,7 +39,7 @@ public class VerificarCodigoRepositorio implements IVerificarCodigoRepository {
             throw new BaseException(e.getMostSpecificCause().getMessage());
         } catch (Exception e) {
             LOGGER.error("Exception: {}", e.getMessage(), e);
-            throw new CustomException("Erro ao salvar os dados do usuário no banco de dados.");
+            throw new CustomException("Erro ao salvar o código no banco de dados.");
         }
     }
 
@@ -86,7 +86,7 @@ public class VerificarCodigoRepositorio implements IVerificarCodigoRepository {
             throw new BaseException(e.getMostSpecificCause().getMessage());
         } catch (Exception e) {
             LOGGER.error("Exception: {}", e.getMessage(), e);
-            throw new CustomException("Erro ao buscar código no banco de dados.");
+            throw new CustomException("Erro ao extrair os dado do usuário no banco.");
         }
     }
 

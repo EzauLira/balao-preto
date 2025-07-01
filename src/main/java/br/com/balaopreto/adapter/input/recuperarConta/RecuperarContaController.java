@@ -31,13 +31,19 @@ public class RecuperarContaController implements IRecuperarContaController {
     @Override
     @PostMapping("/email-por-telefone")
     public ResponseEntity<StandardResponseDto> recuperarConta(@RequestBody UsuarioRequestDto usuarioRequestDto){
-        LOGGER.info("Início do método para validar um novo usuário - controller");
+        LOGGER.info("Início do método para recuperar conta- controller");
 
         String emailColetado = iRecuperarContaCommand.recuperarConta(usuarioRequestDto.getTelefone());
 
         return ResponseEntity.ok(StandardResponseDto.builder().message(MensagensUtils.CODIGO_ENVIADO_RECUPERACAO + emailColetado).build());
     }
 
+    /**
+     * Recebe através da requisição o código digitado pelo usuário e manda para service verificar se baco com o do banco.
+     * Retorna 200 de código confirmado.
+     * @param codigo
+     * @return
+     */
     @Override
     @GetMapping("/verificar-codigo")
     public ResponseEntity<StandardResponseDto> autenticarUsuario(@RequestParam int codigo){

@@ -44,7 +44,7 @@ public class LoginRepositorio implements ILoginRepositorio {
      */
     @Override
     public List<Integer> autenticarUsuario() {
-        LOGGER.info("Início do método para verificar código do usuário - Repositorio");
+        LOGGER.info("Início do método para autenticar o usuário - Repositorio");
 
         try {
             var sql = "SELECT codigo FROM verificacoes WHERE tipo = 'Login'";
@@ -55,7 +55,7 @@ public class LoginRepositorio implements ILoginRepositorio {
             throw new BaseException(e.getMostSpecificCause().getMessage());
         } catch (Exception e) {
             LOGGER.error("Exception: {}", e.getMessage(), e);
-            throw new CustomException("Erro ao buscar código no banco de dados.");
+            throw new CustomException("Erro ao tenrtar autenticar usuário.");
         }
     }
 
@@ -82,7 +82,7 @@ public class LoginRepositorio implements ILoginRepositorio {
             throw new BaseException(e.getMostSpecificCause().getMessage());
         } catch (Exception e) {
             LOGGER.error("Exception: {}", e.getMessage(), e);
-            throw new CustomException("Erro ao buscar código no banco de dados.");
+            throw new CustomException("Erro ao extrair o emauil do usuário.");
         }
     }
 }

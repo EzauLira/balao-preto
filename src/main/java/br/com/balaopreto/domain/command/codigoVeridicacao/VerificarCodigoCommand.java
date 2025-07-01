@@ -47,7 +47,7 @@ public class VerificarCodigoCommand implements IVerificarCodigoCommand {
 
         for (String lista : consultarUsuario){
             if (lista.equals(request.getEmail()))
-                throw new CustomException("Usuário já está cadastrado.");
+                throw new CustomException(MensagensUtils.USUARIO_JA_CADASTRADO);
         }
 
         var codigo = CodigoUtils.gerarCodigo4Digitos();
@@ -68,7 +68,7 @@ public class VerificarCodigoCommand implements IVerificarCodigoCommand {
     @Override
     public void autenticarUsuario(int codigo) {
 
-        LOGGER.info("Início do método para verificar se o código existe - Service.");
+        LOGGER.info("Início do método para autenticar o usuário - Service.");
 
         List<Integer> codigoBanco = iVerificarCodigoRepository.autenticarUsuario();
 
