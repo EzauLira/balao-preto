@@ -33,7 +33,7 @@ public class EmailCommand implements IEmailCommand {
     @Override
     @Async
     public void enviarEmailVerificacao(String email, int codigo) {
-        LOGGER.info("Início do método para envio do o email - controller");
+        LOGGER.info("Início do método para envio do o email - EmailCommand");
         MimeMessage mimeMessage = emailSender.createMimeMessage();
 
         try {
@@ -54,7 +54,7 @@ public class EmailCommand implements IEmailCommand {
      * @return O corpo do e-mail em formato HTML.
      */
     private String gerarCorpoEmailVerificacao(String codigo) {
-        LOGGER.info("Início do método para gerar o corpo d o email - controller");
+        LOGGER.info("Início do método para gerar o corpo d o email - EmailCommand");
         var modelo = EmailEnum.CADIGO_VERIFICACAO.getModelo();
         return modelo
                 .replace("{codigo}", codigo);
@@ -68,7 +68,7 @@ public class EmailCommand implements IEmailCommand {
     @Override
     @Async
     public void enviarEmailAutenticacao(String email, int codigo) {
-        LOGGER.info("Início do método para envio do o email - controller");
+        LOGGER.info("Início do método para envio do o email - EmailCommand");
         MimeMessage mimeMessage = emailSender.createMimeMessage();
 
         try {
@@ -89,8 +89,41 @@ public class EmailCommand implements IEmailCommand {
      * @return O corpo do e-mail em formato HTML.
      */
     private String gerarCorpoEmailAutenticacao(String codigo) {
-        LOGGER.info("Início do método para gerar o corpo d o email - controller");
+        LOGGER.info("Início do método para gerar o corpo d o email - EmailCommand");
         var modelo = EmailEnum.CADIGO_AUTENTICACAO.getModelo();
+        return modelo
+                .replace("{codigo}", codigo);
+    }
+
+    /**
+     * Envia um e-mail de confirmação de inscrição.
+     * @param email O endereço de e-mail do destinatário.
+     */
+    @Override
+    @Async
+    public void enviarEmailRecuperacao(String email, int codigo){
+        LOGGER.info("Início do método para envio do o email - EmailCommand");
+        MimeMessage mimeMessage = emailSender.createMimeMessage();
+
+        try {
+            var helper = new MimeMessageHelper(mimeMessage, true);
+            helper.setTo(email);
+            helper.setText(gerarCorpoEmailRecuperacao(String.valueOf(codigo)), true);
+
+            emailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            throw new CustomException("Erro ao enviar e-mail");
+        }
+    }
+
+    /**
+     * Gera o corpo do e-mail de confirmação.
+     * @param codigo  O codigo de verificação.
+     * @return O corpo do e-mail em formato HTML.
+     */
+    private String gerarCorpoEmailRecuperacao(String codigo) {
+        LOGGER.info("Início do método para gerar o corpo d o email - EmailCommand");
+        var modelo = EmailEnum.CADIGO_RECUPERACAO.getModelo();
         return modelo
                 .replace("{codigo}", codigo);
     }

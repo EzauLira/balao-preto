@@ -67,7 +67,7 @@ public class LoginCommand implements ILoginCommand {
             if (codigo == lista) {
                 for (UsuarioRequestDto email : emailUsuario) {
                     if (email.equals(emailUsuario))
-                        throw new CustomException("Usuário já pussoui cadastro.");
+                        throw new CustomException("Usuário já possui cadastro.");
                 }
                 return;
             }

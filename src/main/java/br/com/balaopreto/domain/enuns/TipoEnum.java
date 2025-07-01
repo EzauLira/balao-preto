@@ -3,7 +3,8 @@ package br.com.balaopreto.domain.enuns;
 public enum TipoEnum {
 
     LOGIN("Login"),
-    CADASTRO("Cadastro");
+    CADASTRO("Cadastro"),
+    RECUPERAR("Recuperar");
 
     private String tipo;
 

@@ -21,8 +21,8 @@ public class VerificarCodigoCommand implements IVerificarCodigoCommand {
     private static final Logger LOGGER = LoggerFactory.getLogger(VerificarCodigoCommand.class);
 
     private final IVerificarCodigoRepository iVerificarCodigoRepository;
-    private IUsuarioCommand iUsuarioCommand;
-    private IUsuarioRepositorio iUsuarioRepositorio;
+    private final IUsuarioCommand iUsuarioCommand;
+    private final IUsuarioRepositorio iUsuarioRepositorio;
     private final IEmailCommand iEmailCommand;
 
     public VerificarCodigoCommand(IVerificarCodigoRepository iVerificarCodigoRepository,IUsuarioCommand iUsuarioCommand,IUsuarioRepositorio iUsuarioRepositorio, IEmailCommand iEmailCommand) {
