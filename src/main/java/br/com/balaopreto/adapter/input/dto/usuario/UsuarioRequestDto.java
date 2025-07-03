@@ -16,4 +16,8 @@ public class UsuarioRequestDto {
     private String nome;
     private String telefone;
     private String email;
+
+   public UsuarioRequestDto(String email){
+        this.email = email;
+    }
 }

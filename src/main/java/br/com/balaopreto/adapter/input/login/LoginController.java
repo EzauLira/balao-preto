@@ -15,7 +15,7 @@ public class LoginController implements ILoginController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
 
-    private ILoginCommand iLoginCommand;
+    private final ILoginCommand iLoginCommand;
 
     public LoginController(ILoginCommand iLoginCommand) {
         this.iLoginCommand = iLoginCommand;
@@ -24,16 +24,16 @@ public class LoginController implements ILoginController {
     /**
      * Recebe através da requisição os dados do usuário e envia para service para gerar um código, em seguida enviar um e-mail.
      * Retorna 200 mensagem de sucesso.
-     * @param usuarioRequestDto
+     * @param request
      * @return
      */
     @Override
     @PostMapping("/logar")
-    public ResponseEntity<StandardResponseDto> logar(@RequestBody UsuarioRequestDto usuarioRequestDto) {
+    public ResponseEntity<StandardResponseDto> logar(@RequestBody UsuarioRequestDto request) {
 
         LOGGER.info("Início do método para logar - controller");
 
-        iLoginCommand.logar(usuarioRequestDto);
+        iLoginCommand.iniciarLogin(request.getEmail());
 
         return ResponseEntity.ok(StandardResponseDto.builder().message(MensagensUtils.SUCESSO_CODIGO_ENVIADO).build());
     }

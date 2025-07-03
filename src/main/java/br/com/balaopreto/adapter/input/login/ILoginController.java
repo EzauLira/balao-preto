@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 public interface ILoginController {
 
-    ResponseEntity<StandardResponseDto> logar(@RequestBody UsuarioRequestDto usuarioRequestDto);
+    ResponseEntity<StandardResponseDto> logar(@RequestBody UsuarioRequestDto request);
     ResponseEntity<StandardResponseDto> autenticarUsuario(@RequestParam int codigo);
 }

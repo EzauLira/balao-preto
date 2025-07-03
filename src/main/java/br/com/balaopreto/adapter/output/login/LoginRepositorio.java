@@ -1,6 +1,6 @@
 package br.com.balaopreto.adapter.output.login;
 
-import br.com.balaopreto.adapter.input.dto.usuario.UsuarioRequestDto;
+import br.com.balaopreto.adapter.input.dto.verificarCodigo.CodigoEmailDto;
 import br.com.balaopreto.domain.enuns.TipoEnum;
 import br.com.balaopreto.domain.exception.BaseException;
 import br.com.balaopreto.domain.exception.CustomException;
@@ -22,12 +22,12 @@ public class LoginRepositorio implements ILoginRepositorio {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public void salvarCodigoAutenticacao(UsuarioRequestDto request, int codigo) {
+    public void salvarCodigoAutenticacao(String email, int codigo) {
         LOGGER.info("Início do método para salvar o código no banco de dados - Repositorio");
 
         try {
             var sql = "INSERT INTO verificacoes (tipo, email, codigo) VALUES (?, ?, ?)";
-            jdbcTemplate.update(sql, TipoEnum.LOGIN.getTipo(), request.getEmail(), codigo);
+            jdbcTemplate.update(sql, TipoEnum.LOGIN.getTipo(), email, codigo);
 
         } catch (DataAccessException e) {
             LOGGER.error("DataAccessException: {}", e.getMessage(), e);
@@ -43,12 +43,15 @@ public class LoginRepositorio implements ILoginRepositorio {
      * @return
      */
     @Override
-    public List<Integer> autenticarUsuario() {
+    public List<CodigoEmailDto> autenticarUsuario( ) {
         LOGGER.info("Início do método para autenticar o usuário - Repositorio");
 
         try {
-            var sql = "SELECT codigo FROM verificacoes WHERE tipo = 'Login'";
-            return jdbcTemplate.queryForList(sql, Integer.class);
+            var sql = "SELECT codigo, email FROM verificacoes WHERE tipo = 'Login'";
+            return jdbcTemplate.query(sql, (rs, rowNum) -> new CodigoEmailDto (
+                    rs.getInt("codigo"),
+                    rs.getString("email")
+            ));
 
         } catch (DataAccessException e) {
             LOGGER.error("DataAccessException: {}", e.getMessage(), e);
@@ -65,17 +68,30 @@ public class LoginRepositorio implements ILoginRepositorio {
      * @return
      */
     @Override
-    public List<UsuarioRequestDto> extrairEmail() {
+    public boolean existeEmail(String email) {
+        LOGGER.info("Início do método para extrair o e-mail do usuário no banco de dados - Repositorio");
+
+        try {
+            var sql = "SELECT EXISTS (SELECT 1 FROM usuarios WHERE email = ?)";
+            return jdbcTemplate.queryForObject(sql, Boolean.class, email);
+
+        } catch (DataAccessException e) {
+            LOGGER.error("DataAccessException: {}", e.getMessage(), e);
+            throw new BaseException(e.getMostSpecificCause().getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Exception: {}", e.getMessage(), e);
+            throw new CustomException("Erro ao extrair o emauil do usuário.");
+        }
+    }
+
+    @Override
+    public List<String> extrairEmailVerificacao() {
         LOGGER.info("Início do método para extrair o e-mail do usuário no banco de dados - Repositorio");
 
         try {
 
-            var sql = "SELECT email FROM usuarios";
-            return jdbcTemplate.query(sql, (rs, rowNum) -> new UsuarioRequestDto(
-                    rs.getString("nome"),
-                    rs.getString("telefone"),
-                    rs.getString("email")
-            ));
+            var sql = "SELECT email FROM verificacoes WHERE tipo = 'Login'";
+            return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("email"));
 
         } catch (DataAccessException e) {
             LOGGER.error("DataAccessException: {}", e.getMessage(), e);

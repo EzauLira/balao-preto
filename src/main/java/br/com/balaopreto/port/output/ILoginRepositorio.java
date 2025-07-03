@@ -1,14 +1,16 @@
 package br.com.balaopreto.port.output;
 
 import br.com.balaopreto.adapter.input.dto.usuario.UsuarioRequestDto;
+import br.com.balaopreto.adapter.input.dto.verificarCodigo.CodigoEmailDto;
 
 import java.util.List;
-
 public interface ILoginRepositorio {
 
-    void salvarCodigoAutenticacao(UsuarioRequestDto request, int codigo);
+    void salvarCodigoAutenticacao(String email, int codigo);
 
-    List<Integer> autenticarUsuario();
+    List<CodigoEmailDto> autenticarUsuario();
 
-    List<UsuarioRequestDto> extrairEmail();
+    boolean existeEmail(String email);
+
+    List<String> extrairEmailVerificacao();
 }
