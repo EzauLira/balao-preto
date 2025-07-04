@@ -1,6 +1,7 @@
 package br.com.balaopreto.adapter.output.verificarCodigo;
 
 import br.com.balaopreto.adapter.input.dto.usuario.UsuarioRequestDto;
+import br.com.balaopreto.adapter.input.dto.verificarCodigo.CodigoEmailDto;
 import br.com.balaopreto.domain.enuns.TipoEnum;
 import br.com.balaopreto.domain.exception.BaseException;
 import br.com.balaopreto.domain.exception.CustomException;
@@ -48,12 +49,15 @@ public class VerificarCodigoRepositorio implements IVerificarCodigoRepository {
      * @return
      */
     @Override
-    public List<Integer> autenticarUsuario() {
+    public List<CodigoEmailDto> autenticarUsuario() {
         LOGGER.info("Início do método autenticar o usuário no anco de dados - Repositorio");
 
         try {
-            var sql = "SELECT codigo FROM verificacoes WHERE tipo = 'Cadastro'";
-            return jdbcTemplate.queryForList(sql, Integer.class);
+            var sql = "SELECT codigo, email FROM verificacoes WHERE tipo = 'Cadastro'";
+            return jdbcTemplate.query(sql, (rs, rowNum) -> new CodigoEmailDto(
+                    rs.getInt("codigo"),
+                    rs.getString("email")
+            ));
 
         } catch (DataAccessException e) {
             LOGGER.error("DataAccessException: {}", e.getMessage(), e);
@@ -69,17 +73,16 @@ public class VerificarCodigoRepositorio implements IVerificarCodigoRepository {
      * @return
      */
     @Override
-    public List<UsuarioRequestDto> extrairDadosUsuario() {
+    public List<UsuarioRequestDto> extrairDadosUsuario(String email, int codigo) {
         LOGGER.info("Início do método para extrair os dados do usuário no banco de dados - Repositorio");
 
         try {
-            var sql = "SELECT nome, telefone, email FROM verificacoes WHERE tipo = 'Cadastro'";
+            var sql = "SELECT nome, telefone, email FROM verificacoes WHERE tipo = 'Cadastro' AND email = ? AND codigo = ?";
 
             return jdbcTemplate.query(sql, (rs, rowNum) -> new UsuarioRequestDto(
                     rs.getString("nome"),
                     rs.getString("telefone"),
-                    rs.getString("email")
-            ));
+                    rs.getString("email")), email, codigo);
 
         } catch (DataAccessException e) {
             LOGGER.error("DataAccessException: {}", e.getMessage(), e);

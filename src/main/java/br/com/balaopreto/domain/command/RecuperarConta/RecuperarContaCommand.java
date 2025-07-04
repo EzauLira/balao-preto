@@ -1,5 +1,6 @@
 package br.com.balaopreto.domain.command.RecuperarConta;
 
+import br.com.balaopreto.adapter.input.dto.verificarCodigo.CodigoEmailDto;
 import br.com.balaopreto.domain.exception.BaseException;
 import br.com.balaopreto.domain.exception.CustomException;
 import br.com.balaopreto.port.input.IEmailCommand;
@@ -20,6 +21,7 @@ public class RecuperarContaCommand implements IRecuperarContaCommand {
 
     private final IRecuperarContaRepositorio iRecuperarContaRepositorio;
     private final IEmailCommand iEmailCommand;
+    private String emailColetado;
 
     public RecuperarContaCommand(IRecuperarContaRepositorio iRecuperarContaRepositorio, IEmailCommand iEmailCommand) {
         this.iRecuperarContaRepositorio = iRecuperarContaRepositorio;
@@ -41,7 +43,7 @@ public class RecuperarContaCommand implements IRecuperarContaCommand {
         if (!consultarEmail.isEmpty()){
 
             var codigo = CodigoUtils.gerarCodigo4Digitos();
-            String emailColetado = consultarEmail.get(0);
+            emailColetado = consultarEmail.get(0);
 
             LOGGER.info("Entrando no método Repositório - Service ");
             iRecuperarContaRepositorio.salvarCodigoAutenticacao(emailColetado, codigo);
@@ -67,12 +69,14 @@ public class RecuperarContaCommand implements IRecuperarContaCommand {
 
         LOGGER.info("Início do método para verificar se o código existe - Service.");
 
-        List<Integer> codigoBanco = iRecuperarContaRepositorio.autenticarConta();
+        List<CodigoEmailDto> registros = iRecuperarContaRepositorio.autenticarConta();
 
-        for (int lista : codigoBanco) {
-            if (codigo == lista)
+        for (CodigoEmailDto registro : registros) {
+            if (registro.getCodigo() == codigo && registro.getEmail().equals(emailColetado)) {
                 return;
+            }
         }
+
         throw new CustomException(MensagensUtils.CODIGO_INVALIDO_OU_INCORRETO);
     }
 }

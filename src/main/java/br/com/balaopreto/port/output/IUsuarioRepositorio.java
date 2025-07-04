@@ -7,5 +7,5 @@ import java.util.List;
 public interface IUsuarioRepositorio {
 
     void registrarUsuario(Usuario usuario);
-    List<String> consultaUsuarior();
+    boolean consultaUsuarior(String email);
 }

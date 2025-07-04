@@ -52,12 +52,12 @@ public class UsuarioRepositorio implements IUsuarioRepositorio {
     }
 
     @Override
-    public List<String> consultaUsuarior() {
+    public boolean consultaUsuarior(String email) {
         LOGGER.info("Início do método para consultar o e-mail no banco de dados - repositório");
 
         try {
-            var sql = "SELECT email From usuarios";
-            return jdbcTemplate.queryForList(sql, String.class);
+            var sql = "SELECT EXISTS (SELECT 1 FROM usuarios WHERE email = ?)";
+            return jdbcTemplate.queryForObject(sql, Boolean.class, email);
 
         } catch (DataAccessException e) {
             LOGGER.error("DataAccessException: {}", e.getMessage(), e);

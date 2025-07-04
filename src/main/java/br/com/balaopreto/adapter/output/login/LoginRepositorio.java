@@ -43,7 +43,7 @@ public class LoginRepositorio implements ILoginRepositorio {
      * @return
      */
     @Override
-    public List<CodigoEmailDto> autenticarUsuario( ) {
+    public List<CodigoEmailDto> autenticarUsuario() {
         LOGGER.info("Início do método para autenticar o usuário - Repositorio");
 
         try {

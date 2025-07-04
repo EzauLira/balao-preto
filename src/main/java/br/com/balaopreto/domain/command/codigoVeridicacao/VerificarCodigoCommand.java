@@ -1,6 +1,7 @@
 package br.com.balaopreto.domain.command.codigoVeridicacao;
 
 import br.com.balaopreto.adapter.input.dto.usuario.UsuarioRequestDto;
+import br.com.balaopreto.adapter.input.dto.verificarCodigo.CodigoEmailDto;
 import br.com.balaopreto.port.output.IUsuarioRepositorio;
 import br.com.balaopreto.utils.constantes.MensagensUtils;
 import br.com.balaopreto.domain.exception.CustomException;
@@ -24,11 +25,12 @@ public class VerificarCodigoCommand implements IVerificarCodigoCommand {
     private final IUsuarioCommand iUsuarioCommand;
     private final IUsuarioRepositorio iUsuarioRepositorio;
     private final IEmailCommand iEmailCommand;
+    private String emailDigitado;
 
-    public VerificarCodigoCommand(IVerificarCodigoRepository iVerificarCodigoRepository,IUsuarioCommand iUsuarioCommand,IUsuarioRepositorio iUsuarioRepositorio, IEmailCommand iEmailCommand) {
+    public VerificarCodigoCommand(IVerificarCodigoRepository iVerificarCodigoRepository, IUsuarioCommand iUsuarioCommand, IUsuarioRepositorio iUsuarioRepositorio, IEmailCommand iEmailCommand) {
         this.iVerificarCodigoRepository = iVerificarCodigoRepository;
         this.iUsuarioCommand = iUsuarioCommand;
-        this.iUsuarioRepositorio= iUsuarioRepositorio;
+        this.iUsuarioRepositorio = iUsuarioRepositorio;
         this.iEmailCommand = iEmailCommand;
     }
 
@@ -37,18 +39,18 @@ public class VerificarCodigoCommand implements IVerificarCodigoCommand {
      * um código aleatório de quatro dígitos, esse código é enviado para o banco de dados pelo método: @salvarCodigoVerificacao.
      * Consulta a tabela de usuários para verificar se o e-mail passado já existe no banco de dados.
      * Em seguida envia para o e-mail do usuário o mesmo código através do método @enviarEmail.
+     *
      * @param request contém os dados da requisição do usuário.
      */
     @Override
     public void confirmarUsuarioPorEmail(UsuarioRequestDto request) {
         LOGGER.info("Início do método para validar o usuário - Service.");
 
-        List<String> consultarUsuario = iUsuarioRepositorio.consultaUsuarior();
+        emailDigitado = request.getEmail();
 
-        for (String lista : consultarUsuario){
-            if (lista.equals(request.getEmail()))
-                throw new CustomException(MensagensUtils.USUARIO_JA_CADASTRADO);
-        }
+        if (iUsuarioRepositorio.consultaUsuarior(request.getEmail()))
+            throw new CustomException(MensagensUtils.USUARIO_JA_CADASTRADO);
+
 
         var codigo = CodigoUtils.gerarCodigo4Digitos();
 
@@ -63,6 +65,7 @@ public class VerificarCodigoCommand implements IVerificarCodigoCommand {
      * Ele pega o código que o usuário recebeu no e-mail em seguida verifica se no banco tem o mesmo código @autentiarUsuario.
      * Ele pega os dados do usuário na tabela e armazena em uma lista @dadosColetados em seguida, em seguida verifica se o código está certo.
      * Se sim salva os dados no banco de dados -> @registrarUsusario.
+     *
      * @param codigo contém o código da requisição do usuário.
      */
     @Override
@@ -70,14 +73,17 @@ public class VerificarCodigoCommand implements IVerificarCodigoCommand {
 
         LOGGER.info("Início do método para autenticar o usuário - Service.");
 
-        List<Integer> codigoBanco = iVerificarCodigoRepository.autenticarUsuario();
+        List<CodigoEmailDto> registros = iVerificarCodigoRepository.autenticarUsuario();
 
-        List<UsuarioRequestDto> dadosColetados = iVerificarCodigoRepository.extrairDadosUsuario();
+        List<UsuarioRequestDto> dadosColetados = iVerificarCodigoRepository.extrairDadosUsuario(emailDigitado, codigo);
 
-        for (int lista : codigoBanco) {
-            if (codigo == lista) {
+        for (CodigoEmailDto registro : registros) {
+            if (registro.getCodigo() == codigo && registro.getEmail().equals(emailDigitado)) {
                 for (UsuarioRequestDto dadosUsuario : dadosColetados) {
-                    iUsuarioCommand.registrarUsuario(dadosUsuario);
+                    if (registro.getCodigo() == codigo && dadosUsuario.getEmail().equals(emailDigitado)) {
+                        iUsuarioCommand.registrarUsuario(dadosUsuario);
+                    }
+
                 }
                 return;
             }

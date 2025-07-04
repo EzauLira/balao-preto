@@ -2,7 +2,6 @@ package br.com.balaopreto.domain.command.login;
 
 //import br.com.balaopreto.adapter.output.seguranca.JwtUtils;
 
-import br.com.balaopreto.adapter.input.dto.usuario.UsuarioRequestDto;
 import br.com.balaopreto.adapter.input.dto.verificarCodigo.CodigoEmailDto;
 import br.com.balaopreto.domain.exception.CustomException;
 import br.com.balaopreto.port.input.IEmailCommand;
@@ -15,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class LoginCommand implements ILoginCommand {
