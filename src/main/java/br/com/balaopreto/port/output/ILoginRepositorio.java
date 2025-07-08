@@ -12,6 +12,4 @@ public interface ILoginRepositorio {
     boolean existeEmail(String email);
 
     List<String> extrairEmailVerificacao();
-
-    long buscarIdPorEmail(String email);
 }

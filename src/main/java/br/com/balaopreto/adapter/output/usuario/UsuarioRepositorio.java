@@ -67,4 +67,21 @@ public class UsuarioRepositorio implements IUsuarioRepositorio {
             throw new CustomException("Erro ao buscar e-mail no banco de dados.");
         }
     }
+
+    @Override
+    public long buscarIdPorEmail(String email) {
+        LOGGER.info("Início do método para extrair o e-mail do usuário no banco de dados - Repositorio");
+
+        try {
+            var sql = "SELECT id FROM usuarios WHERE email = ?";
+            return jdbcTemplate.queryForObject(sql, Long.class, email);
+
+        } catch (DataAccessException e) {
+            LOGGER.error("DataAccessException: {}", e.getMessage(), e);
+            throw new BaseException(e.getMostSpecificCause().getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Exception: {}", e.getMessage(), e);
+            throw new CustomException("Erro ao extrair o emauil do usuário.");
+        }
+    }
 }

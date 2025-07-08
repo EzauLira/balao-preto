@@ -24,6 +24,8 @@ public class SecurityConfig {
                                 "/v1/login/logar",
                                 "/v1/login/verificar-codigo",
                                 "/v1/verificacao/enviar-dados",
+                                "/v1/verificacao/verificar-codigo",
+                                "/v1/recuperar/verificar-codigo",
                                 "/v1/recuperar/email-por-telefone"
                         ).permitAll()
                         .anyRequest().authenticated()

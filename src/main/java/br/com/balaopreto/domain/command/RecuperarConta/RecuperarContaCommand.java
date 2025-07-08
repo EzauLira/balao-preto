@@ -1,11 +1,14 @@
 package br.com.balaopreto.domain.command.RecuperarConta;
 
+import br.com.balaopreto.adapter.input.dto.jwt.TokenResponseDto;
 import br.com.balaopreto.adapter.input.dto.verificarCodigo.CodigoEmailDto;
+import br.com.balaopreto.adapter.output.seguranca.JwtUtils;
 import br.com.balaopreto.domain.exception.BaseException;
 import br.com.balaopreto.domain.exception.CustomException;
 import br.com.balaopreto.port.input.IEmailCommand;
 import br.com.balaopreto.port.input.IRecuperarContaCommand;
 import br.com.balaopreto.port.output.IRecuperarContaRepositorio;
+import br.com.balaopreto.port.output.IUsuarioRepositorio;
 import br.com.balaopreto.utils.CodigoUtils;
 import br.com.balaopreto.utils.constantes.MensagensUtils;
 import org.slf4j.Logger;
@@ -21,11 +24,15 @@ public class RecuperarContaCommand implements IRecuperarContaCommand {
 
     private final IRecuperarContaRepositorio iRecuperarContaRepositorio;
     private final IEmailCommand iEmailCommand;
+    private final IUsuarioRepositorio iUsuarioRepositorio;
+    private final JwtUtils jwtUtils;
     private String emailColetado;
 
-    public RecuperarContaCommand(IRecuperarContaRepositorio iRecuperarContaRepositorio, IEmailCommand iEmailCommand) {
+    public RecuperarContaCommand(IRecuperarContaRepositorio iRecuperarContaRepositorio, IEmailCommand iEmailCommand, IUsuarioRepositorio iUsuarioRepositorio, JwtUtils jwtUtils) {
         this.iRecuperarContaRepositorio = iRecuperarContaRepositorio;
         this.iEmailCommand = iEmailCommand;
+        this.iUsuarioRepositorio = iUsuarioRepositorio;
+        this.jwtUtils = jwtUtils;
     }
 
     /**
@@ -65,7 +72,7 @@ public class RecuperarContaCommand implements IRecuperarContaCommand {
      * @param codigo contém o código da requisição do usuário.
      */
     @Override
-    public void autenticarConta(int codigo) {
+    public TokenResponseDto autenticarConta(int codigo) {
 
         LOGGER.info("Início do método para verificar se o código existe - Service.");
 
@@ -73,7 +80,10 @@ public class RecuperarContaCommand implements IRecuperarContaCommand {
 
         for (CodigoEmailDto registro : registros) {
             if (registro.getCodigo() == codigo && registro.getEmail().equals(emailColetado)) {
-                return;
+
+                Long id = iUsuarioRepositorio.buscarIdPorEmail(emailColetado); // buscar o id real do usuário
+                String token = jwtUtils.gerarToken(emailColetado, id);
+                return new TokenResponseDto(token) ;
             }
         }
 

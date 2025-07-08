@@ -1,5 +1,6 @@
 package br.com.balaopreto.adapter.input.recuperarConta;
 
+import br.com.balaopreto.adapter.input.dto.jwt.TokenResponseDto;
 import br.com.balaopreto.adapter.input.dto.usuario.UsuarioRequestDto;
 import br.com.balaopreto.config.dto.StandardResponseDto;
 import br.com.balaopreto.port.input.IRecuperarContaCommand;
@@ -7,6 +8,7 @@ import br.com.balaopreto.utils.constantes.MensagensUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,11 +48,11 @@ public class RecuperarContaController implements IRecuperarContaController {
      */
     @Override
     @GetMapping("/verificar-codigo")
-    public ResponseEntity<StandardResponseDto> autenticarUsuario(@RequestParam int codigo){
+    public ResponseEntity<TokenResponseDto> autenticarUsuario(@RequestParam int codigo){
         LOGGER.info("Início do método para verificar o código - controller");
 
-        iRecuperarContaCommand.autenticarConta(codigo);
+        TokenResponseDto token = iRecuperarContaCommand.autenticarConta(codigo);
 
-        return ResponseEntity.ok(StandardResponseDto.builder().message(MensagensUtils.USUARIO_LOGADO).build());
+        return ResponseEntity.status(HttpStatus.OK).body(token);
     }
 }

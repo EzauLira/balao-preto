@@ -1,7 +1,9 @@
 package br.com.balaopreto.port.input;
 
+import br.com.balaopreto.adapter.input.dto.jwt.TokenResponseDto;
+
 public interface IRecuperarContaCommand {
 
     String recuperarConta(String telefone);
-    void autenticarConta(int codigo);
+    TokenResponseDto autenticarConta(int codigo);
 }

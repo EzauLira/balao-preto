@@ -40,4 +40,12 @@ public class JwtUtils {
                 .getBody()
                 .getSubject();
     }
+
+    public String extrairID(String token) {
+        return Jwts.parser()
+                .setSigningKey(SECRET)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
 }

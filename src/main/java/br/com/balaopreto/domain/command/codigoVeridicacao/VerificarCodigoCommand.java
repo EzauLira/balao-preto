@@ -1,7 +1,9 @@
 package br.com.balaopreto.domain.command.codigoVeridicacao;
 
+import br.com.balaopreto.adapter.input.dto.jwt.TokenResponseDto;
 import br.com.balaopreto.adapter.input.dto.usuario.UsuarioRequestDto;
 import br.com.balaopreto.adapter.input.dto.verificarCodigo.CodigoEmailDto;
+import br.com.balaopreto.adapter.output.seguranca.JwtUtils;
 import br.com.balaopreto.port.output.IUsuarioRepositorio;
 import br.com.balaopreto.utils.constantes.MensagensUtils;
 import br.com.balaopreto.domain.exception.CustomException;
@@ -25,13 +27,20 @@ public class VerificarCodigoCommand implements IVerificarCodigoCommand {
     private final IUsuarioCommand iUsuarioCommand;
     private final IUsuarioRepositorio iUsuarioRepositorio;
     private final IEmailCommand iEmailCommand;
+    private final JwtUtils jwtUtils;
     private String emailDigitado;
 
-    public VerificarCodigoCommand(IVerificarCodigoRepository iVerificarCodigoRepository, IUsuarioCommand iUsuarioCommand, IUsuarioRepositorio iUsuarioRepositorio, IEmailCommand iEmailCommand) {
+    public VerificarCodigoCommand(IVerificarCodigoRepository iVerificarCodigoRepository,
+                                  IUsuarioCommand iUsuarioCommand,
+                                  IUsuarioRepositorio iUsuarioRepositorio,
+                                  IEmailCommand iEmailCommand,
+                                  JwtUtils jwtUtils) {
+
         this.iVerificarCodigoRepository = iVerificarCodigoRepository;
         this.iUsuarioCommand = iUsuarioCommand;
         this.iUsuarioRepositorio = iUsuarioRepositorio;
         this.iEmailCommand = iEmailCommand;
+        this.jwtUtils = jwtUtils;
     }
 
     /**
@@ -69,7 +78,7 @@ public class VerificarCodigoCommand implements IVerificarCodigoCommand {
      * @param codigo contém o código da requisição do usuário.
      */
     @Override
-    public void autenticarUsuario(int codigo) {
+    public TokenResponseDto autenticarUsuario(int codigo) {
 
         LOGGER.info("Início do método para autenticar o usuário - Service.");
 
@@ -82,10 +91,14 @@ public class VerificarCodigoCommand implements IVerificarCodigoCommand {
                 for (UsuarioRequestDto dadosUsuario : dadosColetados) {
                     if (registro.getCodigo() == codigo && dadosUsuario.getEmail().equals(emailDigitado)) {
                         iUsuarioCommand.registrarUsuario(dadosUsuario);
-                    }
 
+                        long id = iUsuarioRepositorio.buscarIdPorEmail(emailDigitado);
+
+                        String token = jwtUtils.gerarToken(emailDigitado, id);
+
+                        return new TokenResponseDto(token);
+                    }
                 }
-                return;
             }
         }
         throw new CustomException(MensagensUtils.CODIGO_INVALIDO_OU_INCORRETO);

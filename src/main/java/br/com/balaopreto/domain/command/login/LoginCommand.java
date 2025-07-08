@@ -7,6 +7,7 @@ import br.com.balaopreto.domain.exception.CustomException;
 import br.com.balaopreto.port.input.IEmailCommand;
 import br.com.balaopreto.port.input.ILoginCommand;
 import br.com.balaopreto.port.output.ILoginRepositorio;
+import br.com.balaopreto.port.output.IUsuarioRepositorio;
 import br.com.balaopreto.utils.CodigoUtils;
 import br.com.balaopreto.utils.constantes.MensagensUtils;
 import org.slf4j.Logger;
@@ -24,11 +25,13 @@ public class LoginCommand implements ILoginCommand {
     private final IEmailCommand iEmailCommand;
     private String emailDigitado;
     private final JwtUtils jwtUtils;
+    private final IUsuarioRepositorio iUsuarioRepositorio;
 
-    public LoginCommand(ILoginRepositorio iLoginRepositorio, IEmailCommand iEmailCommand, JwtUtils jwtUtils) {
+    public LoginCommand(ILoginRepositorio iLoginRepositorio, IEmailCommand iEmailCommand, JwtUtils jwtUtils, IUsuarioRepositorio iUsuarioRepositorio) {
         this.iLoginRepositorio = iLoginRepositorio;
         this.iEmailCommand = iEmailCommand;
         this.jwtUtils = jwtUtils;
+        this.iUsuarioRepositorio = iUsuarioRepositorio;
     }
 
     /**
@@ -79,12 +82,9 @@ public class LoginCommand implements ILoginCommand {
         if (!flag)
             throw new CustomException(MensagensUtils.CODIGO_INVALIDO_OU_INCORRETO);
 
-        Long id = iLoginRepositorio.buscarIdPorEmail(emailDigitado); // buscar o id real do usuário
+        Long id = iUsuarioRepositorio.buscarIdPorEmail(emailDigitado); // buscar o id real do usuário
         String token = jwtUtils.gerarToken(emailDigitado, id);
-        System.out.println(token);
 
         return new TokenResponseDto(token);
     }
-
-
 }
