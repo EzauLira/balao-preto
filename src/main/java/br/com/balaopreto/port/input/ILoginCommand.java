@@ -1,9 +1,11 @@
 package br.com.balaopreto.port.input;
 
 
+import br.com.balaopreto.adapter.input.dto.jwt.TokenResponseDto;
+
 public interface ILoginCommand {
 
     void iniciarLogin(String email);
 
-    void autenticarUsuario(int codigo);
+    TokenResponseDto autenticarUsuario(int codigo);
 }

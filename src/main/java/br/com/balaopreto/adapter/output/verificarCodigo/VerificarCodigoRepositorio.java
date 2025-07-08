@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -96,9 +97,9 @@ public class VerificarCodigoRepositorio implements IVerificarCodigoRepository {
     /**
      * Deleta o conteúdo da tabela verificações a cada 5 min.
      */
-//    @Scheduled(fixedRate = 60000)
-//    public void limparVerificacoesExpiradas() {
-//        var sql = "DELETE FROM verificacoes WHERE criado_em < NOW() - INTERVAL '5 minutes'";
-//        jdbcTemplate.update(sql);
-//    }
+    @Scheduled(fixedRate = 60000)
+    public void limparVerificacoesExpiradas() {
+        var sql = "DELETE FROM verificacoes WHERE criado_em < NOW() - INTERVAL '5 minutes'";
+        jdbcTemplate.update(sql);
+    }
 }

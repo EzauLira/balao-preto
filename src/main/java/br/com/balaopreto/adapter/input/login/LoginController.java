@@ -1,5 +1,6 @@
 package br.com.balaopreto.adapter.input.login;
 
+import br.com.balaopreto.adapter.input.dto.jwt.TokenResponseDto;
 import br.com.balaopreto.adapter.input.dto.usuario.UsuarioRequestDto;
 import br.com.balaopreto.config.dto.StandardResponseDto;
 import br.com.balaopreto.port.input.ILoginCommand;
@@ -46,11 +47,11 @@ public class LoginController implements ILoginController {
      */
     @Override
     @GetMapping("/verificar-codigo")
-    public ResponseEntity<StandardResponseDto> autenticarUsuario(@RequestParam int codigo){
+    public ResponseEntity<TokenResponseDto> autenticarUsuario(@RequestParam int codigo){
         LOGGER.info("Início do método para verificar o código - controller");
 
-        iLoginCommand.autenticarUsuario(codigo);
+       TokenResponseDto token =  iLoginCommand.autenticarUsuario(codigo);
 
-        return ResponseEntity.ok(StandardResponseDto.builder().message(MensagensUtils.USUARIO_LOGADO).build());
+        return ResponseEntity.ok(token);
     }
 }

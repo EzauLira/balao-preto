@@ -1,7 +1,7 @@
 package br.com.balaopreto.domain.command.login;
 
-//import br.com.balaopreto.adapter.output.seguranca.JwtUtils;
-
+import br.com.balaopreto.adapter.input.dto.jwt.TokenResponseDto;
+import br.com.balaopreto.adapter.output.seguranca.JwtUtils;
 import br.com.balaopreto.adapter.input.dto.verificarCodigo.CodigoEmailDto;
 import br.com.balaopreto.domain.exception.CustomException;
 import br.com.balaopreto.port.input.IEmailCommand;
@@ -23,12 +23,12 @@ public class LoginCommand implements ILoginCommand {
     private final ILoginRepositorio iLoginRepositorio;
     private final IEmailCommand iEmailCommand;
     private String emailDigitado;
-    //private final JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
 
-    public LoginCommand(ILoginRepositorio iLoginRepositorio, IEmailCommand iEmailCommand) {
+    public LoginCommand(ILoginRepositorio iLoginRepositorio, IEmailCommand iEmailCommand, JwtUtils jwtUtils) {
         this.iLoginRepositorio = iLoginRepositorio;
         this.iEmailCommand = iEmailCommand;
-        //this.jwtUtils = jwtUtils;
+        this.jwtUtils = jwtUtils;
     }
 
     /**
@@ -65,18 +65,25 @@ public class LoginCommand implements ILoginCommand {
      * @param codigo contém o código da requisição do usuário.
      */
     @Override
-    public void autenticarUsuario(int codigo) {
+    public TokenResponseDto autenticarUsuario(int codigo) {
         LOGGER.info("Início do método para verificar se o código existe - Service.");
+        boolean flag = false;
 
         List<CodigoEmailDto> registros = iLoginRepositorio.autenticarUsuario();
 
         for (CodigoEmailDto registro : registros) {
             if (registro.getCodigo() == codigo && registro.getEmail().equals(emailDigitado)) {
-                return;
+                flag = true;
             }
         }
+        if (!flag)
+            throw new CustomException(MensagensUtils.CODIGO_INVALIDO_OU_INCORRETO);
 
-        throw new CustomException(MensagensUtils.CODIGO_INVALIDO_OU_INCORRETO);
+        Long id = iLoginRepositorio.buscarIdPorEmail(emailDigitado); // buscar o id real do usuário
+        String token = jwtUtils.gerarToken(emailDigitado, id);
+        System.out.println(token);
+
+        return new TokenResponseDto(token);
     }
 
 
