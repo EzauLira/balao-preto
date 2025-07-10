@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ContatoRequestDto {
 
-    private int contatoId;
+    private String telefone;
     private String apelido;
 }

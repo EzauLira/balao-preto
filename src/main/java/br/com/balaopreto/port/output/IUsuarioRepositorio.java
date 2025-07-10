@@ -6,5 +6,7 @@ public interface IUsuarioRepositorio {
 
     void registrarUsuario(Usuario usuario);
     boolean consultaUsuarior(String email);
-    long buscarIdPorEmail(String email);
+    int buscarIdPorEmail(String email);
+    int buscarIdPorTelefone(String telefone);
+    boolean existeTelefone(String telefone);
 }

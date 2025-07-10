@@ -81,7 +81,7 @@ public class RecuperarContaCommand implements IRecuperarContaCommand {
         for (CodigoEmailDto registro : registros) {
             if (registro.getCodigo() == codigo && registro.getEmail().equals(emailColetado)) {
 
-                Long id = iUsuarioRepositorio.buscarIdPorEmail(emailColetado); // buscar o id real do usuário
+                int id = iUsuarioRepositorio.buscarIdPorEmail(emailColetado); // buscar o id real do usuário
                 String token = jwtUtils.gerarToken(emailColetado, id);
                 return new TokenResponseDto(token) ;
             }

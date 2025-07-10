@@ -92,7 +92,7 @@ public class VerificarCodigoCommand implements IVerificarCodigoCommand {
                     if (registro.getCodigo() == codigo && dadosUsuario.getEmail().equals(emailDigitado)) {
                         iUsuarioCommand.registrarUsuario(dadosUsuario);
 
-                        long id = iUsuarioRepositorio.buscarIdPorEmail(emailDigitado);
+                        int id = iUsuarioRepositorio.buscarIdPorEmail(emailDigitado);
 
                         String token = jwtUtils.gerarToken(emailDigitado, id);
 

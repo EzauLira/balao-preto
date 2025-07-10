@@ -11,8 +11,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public class UsuarioRepositorio implements IUsuarioRepositorio {
 
@@ -25,6 +23,7 @@ public class UsuarioRepositorio implements IUsuarioRepositorio {
 
     /**
      * Registra o usuário no banco de dados após verificar se os dados estão todos corretos anteriormente.
+     *
      * @param usuario
      */
     public void registrarUsuario(Usuario usuario) {
@@ -51,6 +50,12 @@ public class UsuarioRepositorio implements IUsuarioRepositorio {
         }
     }
 
+    /**
+     * Verifica se existe um usuário cadastrado com o e-mail informado.
+     *
+     * @param email O e-mail a ser verificado no banco de dados.
+     * @return      true se o e-mail existir no sistema, false caso contrário.
+     */
     @Override
     public boolean consultaUsuarior(String email) {
         LOGGER.info("Início do método para consultar o e-mail no banco de dados - repositório");
@@ -68,20 +73,74 @@ public class UsuarioRepositorio implements IUsuarioRepositorio {
         }
     }
 
+    /**
+     * Busca o ID do usuário associado ao e-mail informado.
+     *
+     * @param email O e-mail do usuário cujo ID será buscado.
+     * @return      O ID do usuário encontrado no banco de dados.
+     */
     @Override
-    public long buscarIdPorEmail(String email) {
+    public int buscarIdPorEmail(String email) {
         LOGGER.info("Início do método para extrair o e-mail do usuário no banco de dados - Repositorio");
 
         try {
             var sql = "SELECT id FROM usuarios WHERE email = ?";
-            return jdbcTemplate.queryForObject(sql, Long.class, email);
+            return jdbcTemplate.queryForObject(sql, Integer.class, email);
 
         } catch (DataAccessException e) {
             LOGGER.error("DataAccessException: {}", e.getMessage(), e);
             throw new BaseException(e.getMostSpecificCause().getMessage());
         } catch (Exception e) {
             LOGGER.error("Exception: {}", e.getMessage(), e);
-            throw new CustomException("Erro ao extrair o emauil do usuário.");
+            throw new CustomException("Erro ao extrair o email do usuário.");
+        }
+    }
+
+    /**
+     * Busca o ID do usuário associado ao número de telefone informado.
+     *
+     * @param telefone O número de telefone do usuário.
+     * @return         O ID do usuário encontrado.
+     */
+    @Override
+    public int buscarIdPorTelefone(String telefone) {
+        LOGGER.info("Início do método para extrair o telefone do usuário no banco de dados - Repositório");
+
+        try {
+
+            String sql = "SELECT id FROM usuarios WHERE telefone = ?";
+            return jdbcTemplate.queryForObject(sql, Integer.class, telefone);
+
+        } catch (DataAccessException e) {
+            LOGGER.error("DataAccessException: {}", e.getMessage(), e);
+            throw new BaseException(e.getMostSpecificCause().getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Exception: {}", e.getMessage(), e);
+            throw new CustomException("Erro ao extrair o telefone do usuário.");
+        }
+    }
+
+    /**
+     * Verifica se o número de telefone já está cadastrado no sistema.
+     *
+     * @param telefone O número de telefone a ser verificado.
+     * @return         true se o telefone existir, false caso contrário.
+     */
+    @Override
+    public boolean existeTelefone(String telefone) {
+        LOGGER.info("Início do método para verificar se o telefone existe no banco de dados - Repositório");
+
+        try {
+
+            String sql = "SELECT EXISTS (SELECT 1 FROM usuarios WHERE telefone = ?)";
+            return jdbcTemplate.queryForObject(sql, Boolean.class, telefone);
+
+        } catch (DataAccessException e) {
+            LOGGER.error("DataAccessException: {}", e.getMessage(), e);
+            throw new BaseException(e.getMostSpecificCause().getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Exception: {}", e.getMessage(), e);
+            throw new CustomException("Erro ao verificar existência do telefone.");
         }
     }
 }

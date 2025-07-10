@@ -14,7 +14,7 @@ public class JwtUtils {
     private String SECRET;
 
 
-    public String gerarToken(String email, Long idUsuario) {
+    public String gerarToken(String email, int idUsuario) {
         return Jwts.builder()
                 .setSubject(email)
                 .claim("id", idUsuario)
@@ -41,7 +41,7 @@ public class JwtUtils {
                 .getSubject();
     }
 
-    public String extrairID(String token) {
+    public String extrairId(String token) {
         return Jwts.parser()
                 .setSigningKey(SECRET)
                 .parseClaimsJws(token)

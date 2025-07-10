@@ -82,7 +82,7 @@ public class LoginCommand implements ILoginCommand {
         if (!flag)
             throw new CustomException(MensagensUtils.CODIGO_INVALIDO_OU_INCORRETO);
 
-        Long id = iUsuarioRepositorio.buscarIdPorEmail(emailDigitado); // buscar o id real do usuário
+        int id = iUsuarioRepositorio.buscarIdPorEmail(emailDigitado); // buscar o id real do usuário
         String token = jwtUtils.gerarToken(emailDigitado, id);
 
         return new TokenResponseDto(token);
