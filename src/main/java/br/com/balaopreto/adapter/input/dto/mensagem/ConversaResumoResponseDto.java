@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MensagemResponseDto {
-    private String conteudo;
-    private String dataHora;
-    private boolean enviadaPorMim;
-}
+public class ConversaResumoResponseDto {
 
+    private String nomeContato;
+    private String telefoneContato;
+    private String ultimaMensagem;
+    private String dataHora;
+    private boolean mensagemMinha;
+}
