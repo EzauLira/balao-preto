@@ -116,4 +116,74 @@ public class MensagemRepositorio implements IMensagemRepositorio {
             throw new CustomException("Erro ao salvar os dados do usuário no banco de dados.");
         }
     }
+
+    @Override
+    public List<Mensagem> buscarMensagensNaoLidas(int deId, int paraId) {
+        try {
+            var sql = "SELECT * from mensagens WHERE de_id = ? AND para_id = ? AND status = 'ENVIADA' ORDER BY data_hora ASC";
+
+            return jdbcTemplate.query(sql, new Object[]{deId, paraId}, (rs, rowNum) -> Mensagem.builder()
+                    .id(rs.getInt("id"))
+                    .deId(rs.getInt("de_id"))
+                    .paraId(rs.getInt("para_id"))
+                    .conteudo(rs.getString("conteudo"))
+                    .datahora(rs.getString("data_hora"))
+                    .status(rs.getString("status"))
+                    .build());
+
+        } catch (DataAccessException e) {
+            LOGGER.error("DataAccessException: {}", e.getMessage(), e);
+            throw new BaseException(e.getMostSpecificCause().getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Exception: {}", e.getMessage(), e);
+            throw new CustomException("Erro ao salvar os dados do usuário no banco de dados.");
+        }
+    }
+
+    @Override
+    public void marcarMensagensComoLidas(int usuarioId, int contatoId) {
+
+        try {
+            var sql = "UPDATE mensagens SET status = 'LIDA' WHERE para_id = ? AND de_id = ? AND status != 'LIDA' ";
+            jdbcTemplate.update(sql, usuarioId, contatoId);
+
+        } catch (DataAccessException e) {
+            LOGGER.error("DataAccessException: {}", e.getMessage(), e);
+            throw new BaseException(e.getMostSpecificCause().getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Exception: {}", e.getMessage(), e);
+            throw new CustomException("Erro ao salvar os dados do usuário no banco de dados.");
+        }
+    }
+
+    @Override
+    public List<Mensagem> listarUltimaMensagemPorConversa(int usuarioId) {
+
+        try {
+            var sql = """
+                    SELECT DISTINCT ON (
+                        LEAST(de_id, para_id), GREATEST(de_id, para_id)
+                    ) *
+                    FROM mensagens
+                    WHERE de_id = ? OR para_id = ?
+                    ORDER BY LEAST(de_id, para_id), GREATEST(de_id, para_id), data_hora DESC
+                    """;
+            return jdbcTemplate.query(sql, new Object[]{usuarioId, usuarioId}, (rs, rowNuw) ->
+                    Mensagem.builder()
+                            .id(rs.getInt("id"))
+                            .deId(rs.getInt("de_id"))
+                            .paraId(rs.getInt("para_id"))
+                            .conteudo(rs.getString("conteudo"))
+                            .datahora(rs.getString("data_hora"))
+                            .status(rs.getString("status"))
+                            .build());
+
+        } catch (DataAccessException e) {
+            LOGGER.error("DataAccessException: {}", e.getMessage(), e);
+            throw new BaseException(e.getMostSpecificCause().getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Exception: {}", e.getMessage(), e);
+            throw new CustomException("Erro ao salvar os dados do usuário no banco de dados.");
+        }
+    }
 }

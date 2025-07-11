@@ -1,5 +1,6 @@
 package br.com.balaopreto.domain.command.mesangem;
 
+import br.com.balaopreto.adapter.input.dto.mensagem.ConversaResponseDto;
 import br.com.balaopreto.adapter.input.dto.mensagem.ConversaResumoResponseDto;
 import br.com.balaopreto.adapter.input.dto.mensagem.MensagemRequestDto;
 import br.com.balaopreto.adapter.input.dto.mensagem.MensagemResponseDto;
@@ -42,13 +43,16 @@ public class MensagemCommand implements IMensagemCommand {
         int usuarioId = iUsuarioRepositorio.buscarIdPorEmail(emailUsuario);
         int contatoId = iUsuarioRepositorio.buscarIdPorTelefone(telefoneContato);
 
+        iMensagemRepositorio.marcarMensagensComoLidas(usuarioId, contatoId);
+
         List<Mensagem> mensagens = iMensagemRepositorio.listarMensagensEntreUsuarios(usuarioId, contatoId);
 
         return mensagens.stream()
                 .map(m -> MensagemResponseDto.builder()
                         .conteudo(m.getConteudo())
                         .dataHora(m.getDatahora())
-                        .enviadaPorMim(m.getDeId() == usuarioId) // Aqui identifica o autor da mensagem
+                        .enviadaPorMim(m.getDeId() == usuarioId)
+                        .status(m.getStatus())
                         .build())
                 .toList();
     }
@@ -59,4 +63,40 @@ public class MensagemCommand implements IMensagemCommand {
         return iMensagemRepositorio.listarConversasRecentes(usuarioId);
     }
 
+    @Override
+    public List<MensagemResponseDto> buscarNovasMensagens(String emailUsuario, String telefoneContato) {
+
+        int usuarioId = iUsuarioRepositorio.buscarIdPorEmail(emailUsuario);
+        int contatoId = iUsuarioRepositorio.buscarIdPorTelefone(telefoneContato);
+
+        List<Mensagem> mensagens = iMensagemRepositorio.buscarMensagensNaoLidas(contatoId, usuarioId);
+
+        return mensagens.stream().map(m -> MensagemResponseDto.builder()
+                        .conteudo(m.getConteudo())
+                        .dataHora(m.getDatahora())
+                        .enviadaPorMim(false)
+                        .status(m.getStatus())
+                        .build())
+                        .toList();
+    }
+
+    public List<ConversaResponseDto> listaConversasRecentes(String emailUsuario) {
+
+        int usuarioId = iUsuarioRepositorio.buscarIdPorEmail(emailUsuario);
+        List<Mensagem> ultimas = iMensagemRepositorio.listarUltimaMensagemPorConversa(usuarioId);
+
+        return ultimas.stream().map(msg -> {
+            int outroId = msg.getDeId() == usuarioId ? msg.getParaId() : msg.getDeId();
+            var contato = iUsuarioRepositorio.buscarNomeETelefonePorId(outroId);
+
+            return ConversaResponseDto.builder()
+                    .nomeContato(contato.getNome())
+                    .telefoneContato(contato.getTelefone())
+                    .conteudoUltimaMensagem(msg.getConteudo())
+                    .dataHora(msg.getDatahora())
+                    .status(msg.getStatus())
+                    .enviadaPorMim(msg.getDeId() == usuarioId)
+                    .build();
+        }).toList();
+    }
 }

@@ -7,14 +7,13 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class ConversaResumoResponseDto {
-
+@NoArgsConstructor
+public class ConversaResponseDto {
     private String nomeContato;
     private String telefoneContato;
-    private String ultimaMensagem;
+    private String conteudoUltimaMensagem;
     private String dataHora;
     private String status;
-    private boolean mensagemMinha;
+    private boolean enviadaPorMim;
 }

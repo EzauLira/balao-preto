@@ -54,4 +54,14 @@ public class MensagemController implements IMensagemController {
         return ResponseEntity.ok(conversas);
     }
 
+    @GetMapping("/novas")
+    public ResponseEntity<List<MensagemResponseDto>> verificarNovasMensagens(
+            @RequestHeader("Authorization") String token,
+            @RequestParam String telefoneContato) {
+
+        String email = jwtUtils.extrairEmail(token.substring(7));
+        List<MensagemResponseDto> novasMensagens = iMensagemCommand.buscarNovasMensagens(email, telefoneContato);
+
+        return ResponseEntity.ok(novasMensagens);
+    }
 }

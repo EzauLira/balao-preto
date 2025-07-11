@@ -11,4 +11,10 @@ public interface IMensagemRepositorio {
     List<Mensagem> listarMensagensEntreUsuarios(int usuarioId, int contatoId);
 
     List<ConversaResumoResponseDto> listarConversasRecentes(int usuarioId);
-}
+
+    List<Mensagem> buscarMensagensNaoLidas(int deId, int paraId);
+
+    void marcarMensagensComoLidas(int usuarioId, int contatoId);
+
+    List<Mensagem> listarUltimaMensagemPorConversa(int usuarioId);
+ }

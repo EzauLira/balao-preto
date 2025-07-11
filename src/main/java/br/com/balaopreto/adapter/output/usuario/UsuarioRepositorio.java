@@ -1,5 +1,6 @@
 package br.com.balaopreto.adapter.output.usuario;
 
+import br.com.balaopreto.adapter.input.dto.contato.ContatoResponseDto;
 import br.com.balaopreto.domain.entity.Usuario;
 import br.com.balaopreto.domain.exception.BaseException;
 import br.com.balaopreto.domain.exception.CustomException;
@@ -143,4 +144,16 @@ public class UsuarioRepositorio implements IUsuarioRepositorio {
             throw new CustomException("Erro ao verificar existência do telefone.");
         }
     }
+
+    @Override
+    public ContatoResponseDto buscarNomeETelefonePorId(int id) {
+        String sql = "SELECT nome, telefone FROM usuarios WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) ->
+                ContatoResponseDto.builder()
+                        .nome(rs.getString("nome"))
+                        .telefone(rs.getString("telefone"))
+                        .build()
+        );
+    }
+
 }

@@ -13,5 +13,6 @@ public class MensagemResponseDto {
     private String conteudo;
     private String dataHora;
     private boolean enviadaPorMim;
+    private String status;
 }
 
