@@ -5,7 +5,6 @@ import br.com.balaopreto.domain.entity.Mensagem;
 import br.com.balaopreto.domain.exception.BaseException;
 import br.com.balaopreto.domain.exception.CustomException;
 import br.com.balaopreto.port.output.IMensagemRepositorio;
-import org.apache.logging.log4j.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -26,8 +25,14 @@ public class MensagemRepositorio implements IMensagemRepositorio {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Salva uma nova mensagem no banco de dados.
+     *
+     * @param request A entidade Mensagem contendo os dados da mensagem a ser salva.
+     */
     @Override
     public void salvarMensagem(Mensagem request) {
+        LOGGER.info("Início do método salvarMensagem - Repositório");
 
         try {
             String sql = "INSERT INTO mensagens (de_id, para_id, conteudo, status) VALUES (?, ?, ?, ?)";
@@ -42,32 +47,59 @@ public class MensagemRepositorio implements IMensagemRepositorio {
         }
     }
 
+
+    /**
+     * Lista todas as mensagens trocadas entre dois usuários.
+     *
+     * @param usuarioId O ID do usuário logado.
+     * @param contatoId O ID do contato com quem as mensagens foram trocadas.
+     * @return Uma lista de mensagens entre os dois usuários.
+     */
     @Override
     public List<Mensagem> listarMensagensEntreUsuarios(int usuarioId, int contatoId) {
-        String sql = """
-        SELECT * FROM mensagens
-        WHERE (
-            (de_id = ? AND para_id = ? AND visivel_para_remetente = true)
-            OR
-            (de_id = ? AND para_id = ? AND visivel_para_destinatario = true)
-        )
-        ORDER BY data_hora ASC
-    """;
+        LOGGER.info("Início do método listarMensagensEntreUsuarios - Repositório");
 
-        return jdbcTemplate.query(sql,
-                new Object[]{usuarioId, contatoId, contatoId, usuarioId},
-                (rs, rowNum) -> Mensagem.builder()
-                        .id(rs.getInt("id"))
-                        .deId(rs.getInt("de_id"))
-                        .paraId(rs.getInt("para_id"))
-                        .conteudo(rs.getString("conteudo"))
-                        .datahora(rs.getString("data_hora"))
-                        .status(rs.getString("status"))
-                        .build());
+        try {
+
+            String sql = """
+                        SELECT * FROM mensagens
+                        WHERE (
+                            (de_id = ? AND para_id = ? AND visivel_para_remetente = true)
+                            OR
+                            (de_id = ? AND para_id = ? AND visivel_para_destinatario = true)
+                        )
+                        ORDER BY data_hora ASC
+                    """;
+
+            return jdbcTemplate.query(sql,
+                    new Object[]{usuarioId, contatoId, contatoId, usuarioId},
+                    (rs, rowNum) -> Mensagem.builder()
+                            .id(rs.getInt("id"))
+                            .deId(rs.getInt("de_id"))
+                            .paraId(rs.getInt("para_id"))
+                            .conteudo(rs.getString("conteudo"))
+                            .datahora(rs.getString("data_hora"))
+                            .status(rs.getString("status"))
+                            .build());
+        } catch (DataAccessException e) {
+            LOGGER.error("DataAccessException: {}", e.getMessage(), e);
+            throw new BaseException(e.getMostSpecificCause().getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Exception: {}", e.getMessage(), e);
+            throw new CustomException("Erro ao salvar os dados do usuário no banco de dados.");
+        }
     }
 
+
+    /**
+     * Lista as conversas mais recentes do usuário com seus contatos.
+     *
+     * @param usuarioId O ID do usuário logado.
+     * @return Uma lista de DTOs com informações resumidas das últimas conversas.
+     */
     @Override
     public List<ConversaResumoResponseDto> listarConversasRecentes(int usuarioId) {
+        LOGGER.info("Início do método listarConversasRecentes - Repositório");
 
         try {
             var sql = """
@@ -115,8 +147,17 @@ public class MensagemRepositorio implements IMensagemRepositorio {
         }
     }
 
+
+    /**
+     * Busca mensagens não lidas de um usuário para outro.
+     *
+     * @param deId   O ID do remetente da mensagem.
+     * @param paraId O ID do destinatário da mensagem.
+     * @return Uma lista de mensagens não lidas.
+     */
     @Override
     public List<Mensagem> buscarMensagensNaoLidas(int deId, int paraId) {
+        LOGGER.info("Início do método buscarMensagensNaoLidas - Repositório");
         try {
             var sql = "SELECT * from mensagens WHERE de_id = ? AND para_id = ? AND status = 'ENVIADA' ORDER BY data_hora ASC";
 
@@ -138,8 +179,15 @@ public class MensagemRepositorio implements IMensagemRepositorio {
         }
     }
 
+    /**
+     * Marca todas as mensagens recebidas de um contato como lidas.
+     *
+     * @param usuarioId O ID do usuário que está marcando as mensagens como lidas.
+     * @param contatoId O ID do contato cujas mensagens serão marcadas como lidas.
+     */
     @Override
     public void marcarMensagensComoLidas(int usuarioId, int contatoId) {
+        LOGGER.info("Início do método marcarMensagensComoLidas - Repositório");
 
         try {
             var sql = "UPDATE mensagens SET status = 'LIDA' WHERE para_id = ? AND de_id = ? AND status != 'LIDA' ";
@@ -154,8 +202,15 @@ public class MensagemRepositorio implements IMensagemRepositorio {
         }
     }
 
+    /**
+     * Lista a última mensagem trocada com cada contato para exibição de conversas recentes.
+     *
+     * @param usuarioId O ID do usuário logado.
+     * @return Uma lista de mensagens representando a última troca com cada contato.
+     */
     @Override
     public List<Mensagem> listarUltimaMensagemPorConversa(int usuarioId) {
+        LOGGER.info("Início do método listarUltimaMensagemPorConversa - Repositório");
 
         try {
             var sql = """
@@ -185,8 +240,16 @@ public class MensagemRepositorio implements IMensagemRepositorio {
         }
     }
 
+    /**
+     * Busca uma mensagem pelo seu identificador único.
+     *
+     * @param id O ID da mensagem a ser buscada.
+     * @return A mensagem encontrada ou null se não existir.
+     */
     @Override
     public Mensagem buscarMensagemPorId(int id) {
+        LOGGER.info("Início do método buscarMensagemPorId - Repositório");
+
         String sql = "SELECT * FROM mensagens WHERE id = ?";
         List<Mensagem> mensagens = jdbcTemplate.query(sql, new Object[]{id}, (rs, rowNum) -> Mensagem.builder()
                 .id(rs.getInt("id"))
@@ -202,8 +265,17 @@ public class MensagemRepositorio implements IMensagemRepositorio {
         return mensagens.isEmpty() ? null : mensagens.get(0);
     }
 
+    /**
+     * Atualiza a visibilidade de uma mensagem para o remetente ou destinatário.
+     *
+     * @param mensagemId          O ID da mensagem.
+     * @param visivelRemetente    Se verdadeiro, define a mensagem como visível para o remetente.
+     * @param visivelDestinatario Se verdadeiro, define a mensagem como visível para o destinatário.
+     */
     @Override
     public void atualizarVisibilidadeMensagem(int mensagemId, Boolean visivelRemetente, Boolean visivelDestinatario) {
+        LOGGER.info("Início do método atualizarVisibilidadeMensagem - Repositório");
+
         StringBuilder sql = new StringBuilder("UPDATE mensagens SET ");
         List<Object> params = new ArrayList<>();
 

@@ -7,12 +7,17 @@ import br.com.balaopreto.domain.exception.CustomException;
 import br.com.balaopreto.port.input.IMensagemCommand;
 import br.com.balaopreto.port.output.IMensagemRepositorio;
 import br.com.balaopreto.port.output.IUsuarioRepositorio;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class MensagemCommand implements IMensagemCommand {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MensagemCommand.class);
+
 
     private final IMensagemRepositorio iMensagemRepositorio;
     private final IUsuarioRepositorio iUsuarioRepositorio;
@@ -22,8 +27,17 @@ public class MensagemCommand implements IMensagemCommand {
         this.iUsuarioRepositorio = iUsuarioRepositorio;
     }
 
+    /**
+     * Envia uma mensagem de um usuário logado para outro contato.
+     *
+     * @param emailUsuario O e-mail do usuário que está enviando a mensagem.
+     * @param request      DTO contendo os dados da mensagem e o telefone do destinatário.
+     */
     @Override
     public void enviarMensagem(String emailUsuario, MensagemRequestDto request) {
+
+        LOGGER.info("Início do método enviarMensagem - Command");
+
         int remetenteId = iUsuarioRepositorio.buscarIdPorEmail(emailUsuario);
         int destinatarioId = iUsuarioRepositorio.buscarIdPorTelefone(request.getTelefone());
 
@@ -37,8 +51,17 @@ public class MensagemCommand implements IMensagemCommand {
         iMensagemRepositorio.salvarMensagem(mensagem);
     }
 
+    /**
+     * Lista todas as mensagens trocadas entre o usuário logado e um contato específico.
+     *
+     * @param emailUsuario     O e-mail do usuário logado.
+     * @param telefoneContato  O telefone do contato cujas mensagens serão buscadas.
+     * @return                 Uma lista de DTOs contendo as mensagens formatadas.
+     */
     @Override
     public List<MensagemResponseDto> listarMensagens(String emailUsuario, String telefoneContato) {
+        LOGGER.info("Início do método listarMensagens - Command");
+
         int usuarioId = iUsuarioRepositorio.buscarIdPorEmail(emailUsuario);
         int contatoId = iUsuarioRepositorio.buscarIdPorTelefone(telefoneContato);
 
@@ -56,14 +79,30 @@ public class MensagemCommand implements IMensagemCommand {
                 .toList();
     }
 
+    /**
+     * Lista as conversas mais recentes do usuário logado com seus contatos.
+     *
+     * @param email O e-mail do usuário logado.
+     * @return      Uma lista de DTOs com informações resumidas das últimas conversas.
+     */
     @Override
     public List<ConversaResumoResponseDto> listarConversasRecentes(String email) {
+        LOGGER.info("Início do método listarConversasRecentes - Command");
+
         int usuarioId = iUsuarioRepositorio.buscarIdPorEmail(email);
         return iMensagemRepositorio.listarConversasRecentes(usuarioId);
     }
 
+    /**
+     * Busca mensagens não lidas de um contato específico para o usuário logado.
+     *
+     * @param emailUsuario     O e-mail do usuário logado.
+     * @param telefoneContato  O telefone do contato cujas mensagens não lidas serão buscadas.
+     * @return                 Uma lista de DTOs com as mensagens não lidas.
+     */
     @Override
     public List<MensagemResponseDto> buscarNovasMensagens(String emailUsuario, String telefoneContato) {
+        LOGGER.info("Início do método buscarNovasMensagens - Command");
 
         int usuarioId = iUsuarioRepositorio.buscarIdPorEmail(emailUsuario);
         int contatoId = iUsuarioRepositorio.buscarIdPorTelefone(telefoneContato);
@@ -79,7 +118,16 @@ public class MensagemCommand implements IMensagemCommand {
                         .toList();
     }
 
+    /**
+     * Lista as últimas conversas do usuário com outros contatos.
+     * Método auxiliar usado internamente para retornar detalhes completos das conversas.
+     *
+     * @param emailUsuario O e-mail do usuário logado.
+     * @return             Uma lista de DTOs com detalhes das conversas recentes.
+     */
+    @Override
     public List<ConversaResponseDto> listaConversasRecentes(String emailUsuario) {
+        LOGGER.info("Início do método listaConversasRecentes - Command");
 
         int usuarioId = iUsuarioRepositorio.buscarIdPorEmail(emailUsuario);
         List<Mensagem> ultimas = iMensagemRepositorio.listarUltimaMensagemPorConversa(usuarioId);
@@ -99,8 +147,16 @@ public class MensagemCommand implements IMensagemCommand {
         }).toList();
     }
 
+    /**
+     * Apaga uma mensagem com base no tipo de exclusão solicitado.
+     *
+     * @param emailUsuario O e-mail do usuário que está solicitando a exclusão.
+     * @param request      DTO contendo o ID da mensagem e o tipo de exclusão.
+     */
     @Override
     public void deletarMensagem(String emailUsuario, DeletarMensagemRequestDto request) {
+        LOGGER.info("Início do método deletarMensagem - Command");
+
         int usuarioId = iUsuarioRepositorio.buscarIdPorEmail(emailUsuario);
         Mensagem mensagem = iMensagemRepositorio.buscarMensagemPorId(request.getMensagemId());
 

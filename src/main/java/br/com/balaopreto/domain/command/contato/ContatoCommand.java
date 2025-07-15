@@ -58,8 +58,16 @@ public class ContatoCommand implements IContatoCommand {
             iContatoRepositorio.adicionarContato(usuarioId, contatoId, request.getApelido());
     }
 
+    /**
+     * Lista todos os contatos do usuário logado.
+     *
+     * @param emailUsuario O e-mail do usuário cujos contatos serão listados.
+     * @return Uma lista de DTOs contendo informações dos contatos do usuário.
+     */
     @Override
     public List<ListaContatosResponseDto> listarContatos(String emailUsuario) {
+        LOGGER.info("Início do método listarContatos - Serviço");
+
         int usuarioId = iUsuarioRepositorio.buscarIdPorEmail(emailUsuario);
         return iContatoRepositorio.listarContatos(usuarioId);
     }
