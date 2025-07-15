@@ -5,12 +5,14 @@ import br.com.balaopreto.domain.entity.Mensagem;
 import br.com.balaopreto.domain.exception.BaseException;
 import br.com.balaopreto.domain.exception.CustomException;
 import br.com.balaopreto.port.output.IMensagemRepositorio;
+import org.apache.logging.log4j.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -42,30 +44,26 @@ public class MensagemRepositorio implements IMensagemRepositorio {
 
     @Override
     public List<Mensagem> listarMensagensEntreUsuarios(int usuarioId, int contatoId) {
+        String sql = """
+        SELECT * FROM mensagens
+        WHERE (
+            (de_id = ? AND para_id = ? AND visivel_para_remetente = true)
+            OR
+            (de_id = ? AND para_id = ? AND visivel_para_destinatario = true)
+        )
+        ORDER BY data_hora ASC
+    """;
 
-        try {
-
-            String sql = "SELECT * FROM mensagens " +
-                    "WHERE (de_id = ? AND para_id = ?) OR (de_id = ? AND para_id = ?) " +
-                    "ORDER BY data_hora ASC";
-
-            return jdbcTemplate.query(sql, new Object[]{usuarioId, contatoId, contatoId, usuarioId},
-                    (rs, rowNum) -> Mensagem.builder()
-                            .id(rs.getInt("id"))
-                            .deId(rs.getInt("de_id"))
-                            .paraId(rs.getInt("para_id"))
-                            .conteudo(rs.getString("conteudo"))
-                            .datahora(rs.getString("data_hora"))
-                            .status(rs.getString("status"))
-                            .build());
-
-        } catch (DataAccessException e) {
-            LOGGER.error("DataAccessException: {}", e.getMessage(), e);
-            throw new BaseException(e.getMostSpecificCause().getMessage());
-        } catch (Exception e) {
-            LOGGER.error("Exception: {}", e.getMessage(), e);
-            throw new CustomException("Erro ao salvar os dados do usuário no banco de dados.");
-        }
+        return jdbcTemplate.query(sql,
+                new Object[]{usuarioId, contatoId, contatoId, usuarioId},
+                (rs, rowNum) -> Mensagem.builder()
+                        .id(rs.getInt("id"))
+                        .deId(rs.getInt("de_id"))
+                        .paraId(rs.getInt("para_id"))
+                        .conteudo(rs.getString("conteudo"))
+                        .datahora(rs.getString("data_hora"))
+                        .status(rs.getString("status"))
+                        .build());
     }
 
     @Override
@@ -186,4 +184,45 @@ public class MensagemRepositorio implements IMensagemRepositorio {
             throw new CustomException("Erro ao salvar os dados do usuário no banco de dados.");
         }
     }
+
+    @Override
+    public Mensagem buscarMensagemPorId(int id) {
+        String sql = "SELECT * FROM mensagens WHERE id = ?";
+        List<Mensagem> mensagens = jdbcTemplate.query(sql, new Object[]{id}, (rs, rowNum) -> Mensagem.builder()
+                .id(rs.getInt("id"))
+                .deId(rs.getInt("de_id"))
+                .paraId(rs.getInt("para_id"))
+                .conteudo(rs.getString("conteudo"))
+                .status(rs.getString("status"))
+                .datahora(rs.getString("data_hora"))
+                .visivelParaRemetente(rs.getBoolean("visivel_para_remetente"))
+                .visivelParaDestinatario(rs.getBoolean("visivel_para_destinatario"))
+                .build());
+
+        return mensagens.isEmpty() ? null : mensagens.get(0);
+    }
+
+    @Override
+    public void atualizarVisibilidadeMensagem(int mensagemId, Boolean visivelRemetente, Boolean visivelDestinatario) {
+        StringBuilder sql = new StringBuilder("UPDATE mensagens SET ");
+        List<Object> params = new ArrayList<>();
+
+        if (visivelRemetente != null) {
+            sql.append("visivel_para_remetente = ?, ");
+            params.add(visivelRemetente);
+        }
+
+        if (visivelDestinatario != null) {
+            sql.append("visivel_para_destinatario = ?, ");
+            params.add(visivelDestinatario);
+        }
+
+        // remove vírgula final
+        sql.setLength(sql.length() - 2);
+        sql.append(" WHERE id = ?");
+        params.add(mensagemId);
+
+        jdbcTemplate.update(sql.toString(), params.toArray());
+    }
+
 }

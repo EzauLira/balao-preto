@@ -1,6 +1,6 @@
 package br.com.balaopreto.adapter.output.contato;
 
-import br.com.balaopreto.adapter.input.dto.contato.ContatoResponseDto;
+import br.com.balaopreto.adapter.input.dto.contato.ListaContatosResponseDto;
 import br.com.balaopreto.domain.exception.BaseException;
 import br.com.balaopreto.domain.exception.CustomException;
 import br.com.balaopreto.port.output.IContatoRepositorio;
@@ -26,9 +26,9 @@ public class ContatoRepositorio implements IContatoRepositorio {
     /**
      * Adiciona um novo contato ao usuário no banco de dados.
      *
-     * @param usuarioId  O ID do usuário que está adicionando o contato.
-     * @param contatoId  O ID do contato a ser adicionado.
-     * @param apelido    O apelido atribuído ao contato.
+     * @param usuarioId O ID do usuário que está adicionando o contato.
+     * @param contatoId O ID do contato a ser adicionado.
+     * @param apelido   O apelido atribuído ao contato.
      */
     @Override
     public void adicionarContato(int usuarioId, int contatoId, String apelido) {
@@ -51,9 +51,9 @@ public class ContatoRepositorio implements IContatoRepositorio {
     /**
      * Verifica se o contato já foi adicionado anteriormente pelo usuário.
      *
-     * @param usuarioId  O ID do usuário que deseja verificar o contato.
-     * @param contatoId  O ID do contato a ser verificado.
-     * @return           true se o contato já existir, false caso contrário.
+     * @param usuarioId O ID do usuário que deseja verificar o contato.
+     * @param contatoId O ID do contato a ser verificado.
+     * @return true se o contato já existir, false caso contrário.
      */
     @Override
     public boolean contatoJaExiste(int usuarioId, int contatoId) {
@@ -74,14 +74,13 @@ public class ContatoRepositorio implements IContatoRepositorio {
     }
 
     @Override
-    public List<ContatoResponseDto> listarContatos(int usuarioId) {
-        String sql = "SELECT u.nome, u.telefone, c.apelido FROM contatos c INNER JOIN usuarios u ON c.contato_id = u.id WHERE c.usuario_id = ?";
+    public List<ListaContatosResponseDto> listarContatos(int usuarioId) {
+        String sql = "SELECT c.apelido, u.telefone FROM contatos c INNER JOIN usuarios u ON c.contato_id = u.id WHERE c.usuario_id = ?";
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new ContatoResponseDto(
-                                rs.getString("nome"),
-                                rs.getString("telefone"),
-                                rs.getString("apelido")
-                        ),
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new ListaContatosResponseDto(
+                        rs.getString("apelido"),
+                        rs.getString("telefone")),
+                        //rs.getString("descricao")),
                 usuarioId
         );
     }

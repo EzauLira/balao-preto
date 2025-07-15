@@ -1,7 +1,7 @@
 package br.com.balaopreto.domain.command.contato;
 
 import br.com.balaopreto.adapter.input.dto.contato.ContatoRequestDto;
-import br.com.balaopreto.adapter.input.dto.contato.ContatoResponseDto;
+import br.com.balaopreto.adapter.input.dto.contato.ListaContatosResponseDto;
 import br.com.balaopreto.adapter.output.seguranca.JwtUtils;
 import br.com.balaopreto.domain.exception.CustomException;
 import br.com.balaopreto.port.input.IContatoCommand;
@@ -59,7 +59,7 @@ public class ContatoCommand implements IContatoCommand {
     }
 
     @Override
-    public List<ContatoResponseDto> listarContatos(String emailUsuario) {
+    public List<ListaContatosResponseDto> listarContatos(String emailUsuario) {
         int usuarioId = iUsuarioRepositorio.buscarIdPorEmail(emailUsuario);
         return iContatoRepositorio.listarContatos(usuarioId);
     }

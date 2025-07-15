@@ -1,9 +1,6 @@
 package br.com.balaopreto.port.input;
 
-import br.com.balaopreto.adapter.input.dto.mensagem.ConversaResponseDto;
-import br.com.balaopreto.adapter.input.dto.mensagem.ConversaResumoResponseDto;
-import br.com.balaopreto.adapter.input.dto.mensagem.MensagemRequestDto;
-import br.com.balaopreto.adapter.input.dto.mensagem.MensagemResponseDto;
+import br.com.balaopreto.adapter.input.dto.mensagem.*;
 
 import java.util.List;
 
@@ -14,4 +11,5 @@ public interface IMensagemCommand {
     List<ConversaResumoResponseDto> listarConversasRecentes(String email);
     List<MensagemResponseDto> buscarNovasMensagens (String emailUsuario, String telefoneContato);
     List<ConversaResponseDto> listaConversasRecentes(String emailUsuario);
+    void deletarMensagem(String emailUsuario, DeletarMensagemRequestDto request);
 }

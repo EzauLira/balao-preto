@@ -18,5 +18,7 @@ public class Mensagem {
     private Contato contato;
     private String conteudo;
     private boolean enviadaPorMim;
+    private boolean visivelParaRemetente;
+    private boolean visivelParaDestinatario;
 
 }

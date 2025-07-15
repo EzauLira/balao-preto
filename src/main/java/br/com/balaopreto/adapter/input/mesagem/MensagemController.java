@@ -1,9 +1,11 @@
 package br.com.balaopreto.adapter.input.mesagem;
 
 import br.com.balaopreto.adapter.input.dto.mensagem.ConversaResumoResponseDto;
+import br.com.balaopreto.adapter.input.dto.mensagem.DeletarMensagemRequestDto;
 import br.com.balaopreto.adapter.input.dto.mensagem.MensagemRequestDto;
 import br.com.balaopreto.adapter.input.dto.mensagem.MensagemResponseDto;
 import br.com.balaopreto.adapter.output.seguranca.JwtUtils;
+import br.com.balaopreto.config.dto.StandardResponseDto;
 import br.com.balaopreto.port.input.IMensagemCommand;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,14 +25,14 @@ public class MensagemController implements IMensagemController {
     }
 
     @PostMapping("/enviar")
-    public ResponseEntity<String> enviarMensagem(
+    public ResponseEntity<StandardResponseDto> enviarMensagem(
             @RequestHeader("Authorization") String token,
             @RequestBody MensagemRequestDto request) {
 
         String email = jwtUtils.extrairEmail(token.substring(7));
         iMensagemCommand.enviarMensagem(email, request);
 
-        return ResponseEntity.ok("Mensagem enviada com sucesso!");
+        return ResponseEntity.ok(StandardResponseDto.builder().message("Mensagem enviada com sucesso!").build());
     }
 
     @GetMapping("/conversa")
@@ -63,5 +65,12 @@ public class MensagemController implements IMensagemController {
         List<MensagemResponseDto> novasMensagens = iMensagemCommand.buscarNovasMensagens(email, telefoneContato);
 
         return ResponseEntity.ok(novasMensagens);
+    }
+
+    @DeleteMapping("/deletar")
+    public ResponseEntity<StandardResponseDto> deletarMensagem(@RequestHeader("Authorization") String token, @RequestBody DeletarMensagemRequestDto request) {
+        String email = jwtUtils.extrairEmail(token.substring(7));
+        iMensagemCommand.deletarMensagem(email, request);
+        return ResponseEntity.ok(StandardResponseDto.builder().message("Mensagem apagada.").build());
     }
 }

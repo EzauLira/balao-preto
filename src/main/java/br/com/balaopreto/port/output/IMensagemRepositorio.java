@@ -17,4 +17,8 @@ public interface IMensagemRepositorio {
     void marcarMensagensComoLidas(int usuarioId, int contatoId);
 
     List<Mensagem> listarUltimaMensagemPorConversa(int usuarioId);
+
+    Mensagem buscarMensagemPorId(int id);
+
+    void atualizarVisibilidadeMensagem(int mensagemId, Boolean visivelRemetente, Boolean visivelDestinatario);
  }
