@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmar Email - Balão Preto</title>
+    <link rel="stylesheet" href="/assets/css/confirmacaoEmail.css">
+</head>
+<body>
+<div class="confirmarEmail-container">
+
+    <div class="textCima-container">
+        <p> Foi enviado um código ao seu e-mail, esse código será inspirado em 5 (cinco) minutos. </p>
+    </div>
+
+    <div class="formulario-container">
+        <p id="label-codigo">Confirme seu e-mail:</p>
+        <div class="inputs-container">
+            <input type="text" maxlength="1" />
+            <input type="text" maxlength="1" />
+            <input type="text" maxlength="1" />
+            <input type="text" maxlength="1" />
+        </div>
+    </div>
+
+    <p class="contador" id="contador">Contador: 1:30</p>
+
+    <div class="textBaixo-container">
+        <p>Caso tenha digitado o e-mail incorreto <a href="cadastro.html">Clique aqui.</a></p>
+    </div>
+
+    <div class="botao-container">
+        <button onclick="confirmar()">Confirmar</button>
+    </div>
+
+</div>
+
+<script src="/assets/js/confirmacaoEmail.js"></script>
+</body>
+</html>

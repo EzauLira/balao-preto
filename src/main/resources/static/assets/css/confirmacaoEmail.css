@@ -1,0 +1,97 @@
+/* Reset básico */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #000020;
+    color: white;
+}
+
+/* Container principal */
+.confirmarEmail-container {
+    max-width: 600px;
+    width: 100%;  /*novo*/
+    margin: 230px auto;
+    padding: 50px;
+    background-color: #06021e;
+    border-radius: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.267);
+    text-align: center;
+    border: 4px solid #484d50;
+    font-size: 18px;
+}
+
+/* Botão */
+button {
+    padding: 10px 60px;
+    font-size: 20px;
+    color: black;
+    background-color: #fa8128;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+button:hover {
+    background-color: #FE9F4D;
+}
+
+.formulario-container input {
+       width: 50px;
+       height: 50px;
+       font-size: 20px;
+       text-align: center;
+       border-radius: 10px; /* ou 50% para bolinhas */
+       outline: none;
+       background-color: white;
+       color: black;
+       transition: 0.3s;
+}
+
+.formulario-container p {
+    color: #fa8128;
+}
+
+.textBaixo-container a {
+    color: #fa8128;
+    text-decoration: none;
+}
+
+#contador {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+/* Media Query - Estilo específico para telas pequenas (mobile) */
+@media (max-width: 600px) {
+    .bemvindo-container {
+        margin: 60px auto;
+        padding: 20px 15px;
+        border-radius: 20px;
+        border-width: 3px;
+    }
+
+    .logo-container img {
+        width: 100px;
+    }
+
+    .logo-container h1 {
+        font-size: 16px;
+    }
+
+    button {
+        padding: 6px 30px;
+        font-size: 14px;
+    }
+
+    .login-link-container a {
+        font-size: 13px;
+    }
+}

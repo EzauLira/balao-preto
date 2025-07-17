@@ -26,7 +26,19 @@ public class SecurityConfig {
                                 "/v1/verificacao/enviar-dados",
                                 "/v1/verificacao/verificar-codigo",
                                 "/v1/recuperar/verificar-codigo",
-                                "/v1/recuperar/email-por-telefone"
+                                "/v1/recuperar/email-por-telefone",
+
+                                // Liberar todas as páginas HTML na raiz
+                                "/*.html",
+
+                                // Liberar todos os recursos estáticos
+                                "/assets/**",
+                                "/css/**",
+                                "/js/**",
+                                "/img/**",
+                                "/manifest.json",
+                                "/sw.js"
+
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

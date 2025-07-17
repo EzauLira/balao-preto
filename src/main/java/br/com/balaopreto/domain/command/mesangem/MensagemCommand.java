@@ -2,7 +2,6 @@ package br.com.balaopreto.domain.command.mesangem;
 
 import br.com.balaopreto.adapter.input.dto.mensagem.*;
 import br.com.balaopreto.domain.entity.Mensagem;
-import br.com.balaopreto.domain.exception.BaseException;
 import br.com.balaopreto.domain.exception.CustomException;
 import br.com.balaopreto.port.input.IMensagemCommand;
 import br.com.balaopreto.port.output.IMensagemRepositorio;
